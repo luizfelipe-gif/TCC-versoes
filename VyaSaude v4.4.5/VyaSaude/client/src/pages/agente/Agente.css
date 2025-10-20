@@ -1,0 +1,83 @@
+.agente-home {
+   grid-template-columns: repeat(3, auto) !important; /* 3 colunas iguais */
+   grid-template-rows: repeat(2, auto) !important;
+   padding: 15px; /* 2 linhas */
+}
+
+.dashArea {
+   display: flex;
+   flex-direction: column;
+   height: 100vh;
+}
+.mainContentDashboards {
+   margin-left: 220px; /* Espaço para o sidenav */
+   padding: 20px;
+}
+
+.compact-input {
+   width: 7vw !important;
+}
+
+/* .content-pages {
+   align-items: center;
+   margin-left: 300px;
+   margin-top: 7vh;
+   height: calc(100vh - 7vh);
+   left: 300px;
+} */
+
+.agente-perfil {
+   padding: 20px 5vw;
+
+   input {
+      font-size: 1rem !important;
+      height: 1.3rem !important;
+   }
+   
+   .disable {
+      background-color: #c0c5cf34;
+      cursor: none !important;
+   }
+}
+
+
+.form-fields-agente {
+   display: flex;
+   text-align: center;
+   align-items: center;
+   justify-content: space-between;
+   white-space: nowrap;
+   margin: 20px 0px;
+   /* max-width: 120vw; */
+
+   .dropDownMenu-A {
+      width: 270px;
+
+   }
+
+   .width-large input {
+      display: flex;
+      align-items: center;
+      width: 47vw;
+   }
+
+   .width-medium input {
+      display: flex;
+      align-items: center;
+      width: 23vw
+   }
+
+   .width-small input {
+      display: flex;
+      align-items: center;
+      width: 10vw
+   }
+
+   label {  /* Labels dos inputs */
+      font-size: 1.2rem;
+   }
+}
+
+.table-inputs {
+   display: flex;
+}
