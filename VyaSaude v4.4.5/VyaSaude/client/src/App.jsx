@@ -76,6 +76,7 @@ function App() {
                
                {/* Rotas: Login */}
                <Route path="/"                           element={<Login />} />
+               {/* <Route path="/"                           element={<landPage />} /> */}
                <Route path="/login"                      element={<Login />} />
                <Route path="/cadastro"                   element={<Cadastro />} />
                <Route path="/recuperar"                  element={<Recuperar />} />

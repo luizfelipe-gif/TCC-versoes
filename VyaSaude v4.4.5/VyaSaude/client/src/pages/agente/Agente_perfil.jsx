@@ -44,7 +44,6 @@ function Agente_perfil() {
             console.error(error);
          }
       };
-
       buscarDados();
    }, []);
    

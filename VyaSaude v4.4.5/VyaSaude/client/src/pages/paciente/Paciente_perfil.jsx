@@ -57,14 +57,13 @@ function Paciente_perfil() {
             const { data } = await api.get('/paciente/me');
             setFormDados(data.response);
             console.log(`Data.response:`, data.response)
-         } catch (err) {
-            console.error('Erro ao buscar dados do usuário:', err);
+         } catch (error) {
+            console.error('Erro ao buscar dados do usuário:', error);
          }
       };
       buscarDados();
    }, []);
    
-
    const navigate = useNavigate();
 
    return(

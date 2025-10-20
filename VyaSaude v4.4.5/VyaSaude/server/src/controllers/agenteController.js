@@ -69,14 +69,15 @@ route.get("/perfil", authenticate, async (request, response) => {
 
 //    const agente = {
 //       ...dadosAgente, 
-//       createdAt: usuario.createdAt,
 //       posto: dadosAgente.posto.nome_posto,
 //       cbo: dadosAgente.cbo.codigo, 
 //       cbo_descricao: dadosAgente.cbo.descricao
+//       createdAt: usuario.createdAt,
 //    }
 
 //    return response.status(200).send({response: agente});
 // });
+
 route.get("/:encontrarNome", async (request, response) => {
    const {encontrarNome} = request.params;
    const encontrarAgente = await repositorioAgente.find({where: [
