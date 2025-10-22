@@ -6,7 +6,8 @@ import ButtonBack from "../../components/ButtonBack/Index"
 import { useNavigate, Link } from "react-router-dom";
 import { Button, FormLabel, TextField } from "@mui/material";
 import TabelaVisitas from "../../components/TabelaVisitas/Index";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from '../../services/api';
 
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
@@ -17,59 +18,16 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import { GridRowModes, DataGrid, GridActionsCellItem, GridRowEditStopReasons, Toolbar, ToolbarButton } from '@mui/x-data-grid';
 
-import { randomCreatedDate,randomTraderName, randomId, randomArrayItem } from '@mui/x-data-grid-generator'; //remover
+import { randomId } from '@mui/x-data-grid-generator'; //remover
 
 const roles = ['Market', 'Finance', 'Development'];  // remover
 
-const randomRole = () => { // remover
-   return randomArrayItem(roles);
-}; // remover
-
-const initialRows = [ // remover
-   {
-      id: randomId(),
-      name: randomTraderName(),
-      age: 25,
-      joinDate: randomCreatedDate(),
-      role: randomRole(),
-   },
-   {
-      id: randomId(),
-      name: randomTraderName(),
-      age: 36,
-      joinDate: randomCreatedDate(),
-      role: randomRole(),
-   },
-   {
-      id: randomId(),
-      name: randomTraderName(),
-      age: 19,
-      joinDate: randomCreatedDate(),
-      role: randomRole(),
-   },
-   {
-      id: randomId(),
-      name: randomTraderName(),
-      age: 28,
-      joinDate: randomCreatedDate(),
-      role: randomRole(),
-   },
-   {
-      id: randomId(),
-      name: randomTraderName(),
-      age: 23,
-      joinDate: randomCreatedDate(),
-      role: randomRole(),
-   },
-]; // remover
-
-
 function EditToolbar(props) {
-   const { setRows, setRowModesModel } = props;
+   const { setLinhas, setRowModesModel } = props;
 
    const handleClick = () => {
       const id = randomId();
-      setRows((oldRows) => [
+      setLinhas((oldRows) => [
          ...oldRows,
          { id, name: '', age: '', role: '', isNew: true },
       ]);
@@ -81,9 +39,9 @@ function EditToolbar(props) {
 
    return (
       <Toolbar>
-         <Tooltip title="Add record">
+         <Tooltip title="Adicionar novo registro">
          <ToolbarButton onClick={handleClick}>
-            <AddIcon fontSize="small" />
+            <AddIcon fontSize="small" /> {/* TROCAR ICONE PRA SVG*/}
          </ToolbarButton>
          </Tooltip>
       </Toolbar>
@@ -92,9 +50,63 @@ function EditToolbar(props) {
 
 function Agente_histVisitas() {
    const navigate = useNavigate();
+   
+   const [formDados, setFormDados] = useState({
+      nome: '',
+      cpf: '',
+      email: ''
+   });
 
-   const [rows, setRows] = useState(initialRows);
+   let linhasIniciais = [ // remover
+      {
+         id: '123456',
+         cpf: `${formDados.cpf}`,
+         paciente: 'paciente',
+         agente: 'agente',
+         data: '2025-10-22',
+         endereco: 'rua blablabla',
+         motivo: 'motivo',
+         status: 'Realizado',
+         descricao: 'descrição'
+      },
+      {
+         id: '123457',
+         cpf: `${formDados.cpf}`,
+         paciente: 'paciente',
+         agente: 'agente',
+         data: '2025-10-22',
+         endereco: 'rua blablabla',
+         motivo: 'motivo',
+         status: 'Realizado',
+         descricao: 'descrição'
+      },
+   ]; // remover
+
+   const [linhas, setLinhas] = useState(linhasIniciais);
    const [rowModesModel, setRowModesModel] = useState({});
+
+   useEffect(() => {
+      async function buscarDados() {
+         try {
+            const token = sessionStorage.getItem("token");
+
+            const response = await api.get('/agente/perfil', {
+               headers: {
+                  Authorization: `Bearer ${token}`  
+               }
+            });
+
+            setFormDados(response.data);
+            console.log(response);
+         } catch (error) {
+            console.error(error);
+         }
+      };
+      buscarDados();
+   }, []);
+
+
+
 
    const handleRowEditStop = (params, event) => {
       if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -102,16 +114,16 @@ function Agente_histVisitas() {
       }
    };
 
-   const handleEditClick = (id) => () => {
+   const handleEditClick = (id) => () => { // Ao clicar na linha, muda para o modo de edição da planilha
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
    };
 
-   const handleSaveClick = (id) => () => {
+   const handleSaveClick = (id) => () => { // Ao clicar em salvar, armazena as mudanças feitas
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
    };
 
-   const handleDeleteClick = (id) => () => {
-      setRows(rows.filter((row) => row.id !== id));
+   const handleDeleteClick = (id) => () => { // Ao clicar em deletar, exclui aquela linha da planilha
+      setLinhas(linhas.filter((row) => row.id !== id));
    };
 
    const handleCancelClick = (id) => () => {
@@ -120,75 +132,51 @@ function Agente_histVisitas() {
          [id]: { mode: GridRowModes.View, ignoreModifications: true },
       });
 
-      const editedRow = rows.find((row) => row.id === id);
-      if (editedRow.isNew) {
-         setRows(rows.filter((row) => row.id !== id));
+      const linhaEditada = linhas.find((row) => row.id === id);
+
+      if (linhaEditada.isNew) {
+         setLinhas(linhas.filter((row) => row.id !== id));
       }
    };
 
    const processRowUpdate = (newRow) => {
-      const updatedRow = { ...newRow, isNew: false };
-      setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-      return updatedRow;
+      const linhaAtualizada = { ...newRow, isNew: false };
+      setLinhas(linhas.map((row) => (row.id === newRow.id ? linhaAtualizada : row)));
+      return linhaAtualizada;
    };
 
    const handleRowModesModelChange = (newRowModesModel) => {
       setRowModesModel(newRowModesModel);
    };
 
-   const columns = [
-      { field: 'id', headerName: 'Registro', width: 130, editable: false },
-      { field: 'cpf', headerName: 'CPF', width: 130, editable: true },
-      { field: 'paciente', headerName: 'Paciente', width: 180, editable: true },
-      { field: 'agente', headerName: 'Agente', width: 180, editable: true },
-      { field: 'data', headerName: 'Data/Hora', width: 130, editable: true },
-      { field: 'endereco', headerName: 'Endereço', width: 180, editable: true },
-      { field: 'motivo', headerName: 'Motivo', width: 130, editable: true },
-      { field: 'status', headerName: 'Status', width: 130, editable: true },
-      { field: 'descrição', headerName: 'Descrição', width: 180, editable: true },
-      { field: 'acoes', headerName: 'Ações', width: 130, editable: true },
-      // {
-      //    field: 'age',
-      //    headerName: 'Paciente',
-      //    // type: 'number', -> number, date, singleSelect, 
-      //    width: 80,
-      //    align: 'left',
-      //    // headerAlign: 'left', right
-      //    editable: true,
-      // },
-      // {
-      //    field: 'joinDate',
-      //    headerName: 'Join date',
-      //    // type: 'date',
-      //    width: 180,
-      //    editable: true,
-      // },
-      // {
-      //    field: 'role',
-      //    headerName: 'Department',
-      //    width: 220,
-      //    editable: true,
-      //    // type: 'singleSelect',
-      //    valueOptions: ['Market', 'Finance', 'Development'],
-      // },
-      { field: 'actions', type: 'actions', headerName: 'Ações', width: 100, cellClassName: 'actions', getActions: ({ id }) => {
-         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+   const colunas = [
+      { field: 'id',       align: 'center',   headerName: 'Registro',    headerAlign: 'center',   width: 130,   editable: false, type: 'number' },
+      { field: 'cpf',      align: 'center',   headerName: 'CPF',         headerAlign: 'center',   width: 130,   editable: false, type: 'number'  },
+      { field: 'paciente', align: 'center',   headerName: 'Paciente',    headerAlign: 'center',   width: 180,   editable: false },
+      { field: 'agente',   align: 'center',   headerName: 'Agente',      headerAlign: 'center',   width: 180,   editable: false },
+      { field: 'data',     align: 'center',   headerName: 'Data/Hora',   headerAlign: 'center',   width: 130,   editable: false, type: 'date', valueGetter: (value) => value && new Date(value)},
+      { field: 'endereco', align: 'center',   headerName: 'Endereço',    headerAlign: 'center',   width: 180,   editable: true },
+      { field: 'motivo',   align: 'center',   headerName: 'Motivo',      headerAlign: 'center',   width: 130,   editable: true },
+      { field: 'status',   align: 'center',   headerName: 'Status',      headerAlign: 'center',   width: 130,   editable: true, type: 'singleSelect', valueOptions: ['Realizado', 'Ausente', 'Mudou-se', 'Óbito'] },
+      { field: 'descrição',align: 'center',   headerName: 'Descrição',   headerAlign: 'center',   width: 180,   editable: true },
+      { field: 'actions',  align: 'center',   headerName: 'Ações',       headerAlign: 'center',   width: 100,   cellClassName: 'actions', type: 'actions', 
+         getActions: ({ id }) => {
+            const modoEdicao = rowModesModel[id]?.mode === GridRowModes.Edit;
 
-         if (isInEditMode) {
-            return [
-               <GridActionsCellItem icon={<SaveIcon />} label="Save" material={{sx: {color: 'primary.main'}}} onClick={handleSaveClick(id)} />,
-               <GridActionsCellItem icon={<CancelIcon />} label="Cancel" className="textPrimary" onClick={handleCancelClick(id)} color="inherit"/>
-            ];
+            if (modoEdicao) {
+               return [
+                  <GridActionsCellItem icon={<SaveIcon />} label="Save" material={{sx: {color: 'primary.main'}}} onClick={handleSaveClick(id)} />,
+                  <GridActionsCellItem icon={<CancelIcon />} label="Cancel" className="textPrimary" onClick={handleCancelClick(id)} color="inherit"/>
+               ];
+            }
+
+            return [ 
+               <GridActionsCellItem icon={<EditIcon />} label="Edit" className="textPrimary" onClick={handleEditClick(id)} color="inherit"/>,
+               <GridActionsCellItem icon={<DeleteIcon />} label="Delete" className="textPrimary" onClick={handleDeleteClick(id)} color="inherit"/> 
+            ] 
          }
-
-         return [
-            <GridActionsCellItem
-               icon={<EditIcon />} label="Edit" className="textPrimary" onClick={handleEditClick(id)} color="inherit"/>,
-            <GridActionsCellItem
-               icon={<DeleteIcon />} label="Delete" className="textPrimary" onClick={handleDeleteClick(id)} color="inherit"/>
-         ]}
       }
-  ];
+   ];
 
   return (
       <div className="app">
@@ -221,8 +209,8 @@ function Agente_histVisitas() {
 
                   <Box sx={{height: 500, width: '100%', '& .actions': {color: 'text.secondary'}, '& .textPrimary': {color: 'text.primary'}}}>
                   <DataGrid
-                     rows={rows}
-                     columns={columns}
+                     rows={linhas}
+                     columns={colunas}
                      editMode="row"
                      rowModesModel={rowModesModel}
                      onRowModesModelChange={handleRowModesModelChange}
@@ -230,11 +218,15 @@ function Agente_histVisitas() {
                      processRowUpdate={processRowUpdate}
                      slots={{ toolbar: EditToolbar }}
                      slotProps={{
-                        toolbar: { setRows, setRowModesModel },
+                        toolbar: { setLinhas, setRowModesModel },
                      }}
                      showToolbar
                      />
                   </Box>
+
+                  <TextField className="width-large disable" variant="outlined" value={formDados.nome} label="Nome completo"/>
+                  <TextField className="width-medium disable" variant="outlined" value={formDados.cpf} label="CPF"/>
+                  <TextField className="width-medium disable" variant="outlined" value={formDados.email} label="E-mail"/>
             </div>
          </main>
       </div>

@@ -6,8 +6,7 @@ import ButtonBack from "../../components/ButtonBack/Index"
 // import PageWIP from "../../components/PageWIP/Index"
 import api from '../../services/api';
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from "react-router-dom";
-import { Form } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 import { TextField } from "@mui/material"
 
 function Agente_perfil() {
