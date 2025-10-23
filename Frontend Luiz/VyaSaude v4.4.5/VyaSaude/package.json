@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "npm install && npm audit fix && code . && start cmder /m && npm run dev"
   },
   "author": "Luiz & Daniel",
   "license": "MIT",

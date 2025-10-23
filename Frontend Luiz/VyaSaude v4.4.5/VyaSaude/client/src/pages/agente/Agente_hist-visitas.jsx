@@ -20,8 +20,6 @@ import { GridRowModes, DataGrid, GridActionsCellItem, GridRowEditStopReasons, To
 
 import { randomId } from '@mui/x-data-grid-generator'; //remover
 
-const roles = ['Market', 'Finance', 'Development'];  // remover
-
 function EditToolbar(props) {
    const { setLinhas, setRowModesModel } = props;
 
@@ -57,7 +55,7 @@ function Agente_histVisitas() {
       email: ''
    });
 
-   let linhasIniciais = [ // remover
+   const linhasIniciais = [ // remover
       {
          id: '123456',
          cpf: `${formDados.cpf}`,
@@ -110,7 +108,7 @@ function Agente_histVisitas() {
 
    const handleRowEditStop = (params, event) => {
       if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-         event.defaultMuiPrevented = true;
+         event.defaultMuiPrevented = true; // 
       }
    };
 
@@ -123,7 +121,7 @@ function Agente_histVisitas() {
    };
 
    const handleDeleteClick = (id) => () => { // Ao clicar em deletar, exclui aquela linha da planilha
-      setLinhas(linhas.filter((row) => row.id !== id));
+      setLinhas(linhas.filter((linha) => linha.id !== id));
    };
 
    const handleCancelClick = (id) => () => {
@@ -132,21 +130,21 @@ function Agente_histVisitas() {
          [id]: { mode: GridRowModes.View, ignoreModifications: true },
       });
 
-      const linhaEditada = linhas.find((row) => row.id === id);
+      const linhaEditada = linhas.find((linha) => linha.id === id);
 
       if (linhaEditada.isNew) {
-         setLinhas(linhas.filter((row) => row.id !== id));
+         setLinhas(linhas.filter((linha) => linha.id !== id));
       }
    };
 
-   const processRowUpdate = (newRow) => {
-      const linhaAtualizada = { ...newRow, isNew: false };
-      setLinhas(linhas.map((row) => (row.id === newRow.id ? linhaAtualizada : row)));
+   const processRowUpdate = (novaLinha) => {
+      const linhaAtualizada = { ...novaLinha, isNew: false };
+      setLinhas(linhas.map((linha) => (linha.id === novaLinha.id ? linhaAtualizada : linha)));
       return linhaAtualizada;
    };
 
-   const handleRowModesModelChange = (newRowModesModel) => {
-      setRowModesModel(newRowModesModel);
+   const handleRowModesModelChange = (novaLinhaModesModel) => {
+      setRowModesModel(novaLinhaModesModel);
    };
 
    const colunas = [
@@ -211,7 +209,7 @@ function Agente_histVisitas() {
                   <DataGrid
                      rows={linhas}
                      columns={colunas}
-                     editMode="row"
+                     editMode="linha"
                      rowModesModel={rowModesModel}
                      onRowModesModelChange={handleRowModesModelChange}
                      onRowEditStop={handleRowEditStop}
