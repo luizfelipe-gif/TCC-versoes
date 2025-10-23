@@ -10,17 +10,17 @@
 
 - Crie **DUAS pastas**: 
   - A **primeira** será pra clonar o repositório do GitHub e sempre receber a última versão vindo do GitHub com o **PULL**.
-  - A **segunda** será uma cópia da primeira, onde vc **ará suas alterações** pra enviar ao GitHub com o **PUSH**.
+  - A **segunda** será uma cópia da primeira, onde você **fará suas alterações** pra enviar ao GitHub com o **PUSH**.
 
 </br>
 
 - Por que disso? 
   - O objetivo é de evitar conflitos de versões caso outra pessoa mandar uma atualização enquanto você está mexendo em algo, e evita adicionar complexidade aqui no GitHub, tornando algo simplificado.
-  - Antes de enviar as suas alterações, vc terá que baixar novamente a pasta do GitHub (pra caso alguém tenha feito atualizações, não dar conflito de versões).
+  - Antes de enviar as suas alterações, você terá que baixar novamente a pasta do GitHub (pra caso alguém tenha feito atualizações, não dar conflito de versões).
 
 </br>
 
-Caso vc alterou diretamente na primeira pasta (pasta clonada), vc irá **perder suas alterações na hora do PULL da etapa de receber os arquivos** vindo do GitHub.
+Caso você alterou diretamente na primeira pasta (pasta clonada), você irá **perder suas alterações na hora do PULL da etapa de receber os arquivos** vindo do GitHub.
 
 **>>Faça suas alterações na segunda pasta!<<**
 
