@@ -27,7 +27,6 @@ function authenticate(request, response, next) {
          }
          return response.status(401).send({message: "Acesso não autorizado. Token inválido"});
       }
-      console.log("Token decodificado:", payload);
 
       request.usuario = payload;
       
