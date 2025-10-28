@@ -20,7 +20,7 @@ const endereco = new EntitySchema({
         zona: {type: "many-to-one", target: "Zona", nullable: false},
         material_predominante: {type: "many-to-one", target: "MaterialPredominante", nullable: false},
         tipo_imovel: {type: "many-to-one", target: "TipoImovel", nullable: false},
-        tipo_animal: {type: "many-to-one", target: "TipoAnimal", nullable: false}
+        tipo_animal: {type: "many-to-one", target: "TipoAnimal", nullable: true}
     }
 });
 

@@ -5,7 +5,7 @@ const agente = new EntitySchema({
     tableName: "agente",
     columns: {
         id: {primary: true, type: "int", generated: true},
-        nome: {type: "varchar", length: 100, nullable: false},
+        nome_agente: {type: "varchar", length: 100, nullable: false},
         cpf: {type: "varchar", length: 11, unique: true, nullable: false},
         data_admissao: {type: "date", nullable: false},
         data_demissao: {type: "date", nullable: true},

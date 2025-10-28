@@ -12,8 +12,6 @@ import { generateNewPassword }         from "../utils/login.js";
 
 const route = express.Router();
 const repositorioUsuario = AppDataSource.getRepository(usuario);
-// const repositorioAgente = AppDataSource.getRepository(agente);
-// const repositorioPaciente = AppDataSource.getRepository(paciente);
 
 route.get("/me", authenticate, async (request, response) => {
    const usuario = await repositorioUsuario.findOneBy({email: request.usuario.email});
@@ -21,8 +19,15 @@ route.get("/me", authenticate, async (request, response) => {
    if (!usuario) {
       return response.status(404).send({response: "Usuário não encontrado."});
    }
-   
-   return response.status(200).send(usuario);
+
+   return response.status(200).send({
+      nome: usuario.nome,
+      nome_social: usuario.nome_social,
+      cpf: usuario.cpf,
+      email: usuario.email,
+      tipoUsuario: usuario.tipoUsuario,
+      createdAt: usuario.createdAt
+   });
 });
 
 route.post("/", async (request, response) => {

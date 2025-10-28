@@ -11,34 +11,9 @@ import cbo                    from "../entities/cbo.js";
 const route = express.Router();
 const repositorioPaciente = AppDataSource.getRepository(paciente);
 const repositorioUsuario = AppDataSource.getRepository(usuario);
-const repositorioAgente = AppDataSource.getRepository(agente);
-const repositorioEndereco = AppDataSource.getRepository(endereco);
+const repositorioagente = AppDataSource.getRepository(agente);
 const repositorioCbo = AppDataSource.getRepository(cbo);
-
-route.get("/me", authenticate, async (request, response) => {
-   const dadosPaciente = await repositorioPaciente.findOne({
-      where: {email: request.usuario.email},
-      relations: ["endereco", "agente", "cbo"]
-   });
-
-   if (!dadosPaciente) {
-      return response.status(404).send({response: "Usuário não encontrado."});
-   }
-
-   const usuario = await repositorioUsuario.findOneBy({email: request.usuario.email});
-   if (!usuario) {
-      return response.status(404).send({response: "Usuário não encontrado."});
-   }
-
-   const paciente = {
-      ...dadosPaciente, 
-      createdAt: usuario.createdAt, 
-      cbo: dadosPaciente.cbo.codigo, 
-      cbo_descricao: dadosPaciente.cbo.descricao
-   }
-
-   return response.status(200).send({response: paciente});
-});
+const repositorioEndereco = AppDataSource.getRepository(endereco);
 
 route.get("/", async (request, response) => {
     const pacientes = await repositorioPaciente.find();
@@ -59,31 +34,30 @@ route.get("/:encontrarPaciente", async (request, response) => {
    return response.status(200).send({response: verificarPaciente});
 });
 
-route.post("/verificarDados", async (request, response) => {
-   const {email, cpf} = request.body;
+route.get("/perfil", authenticate, async (request, response) => {
+   const dadosPaciente = await repositorioPaciente.findOne({
+      where: {email: request.usuario.email},
+      relations: ["endereco", "agente", "cbo"]
+   });
 
-   try {
-      const pacienteEmail = await repositorioPaciente.findOneBy({ email });
-      const pacienteCPF = await repositorioPaciente.findOneBy({ cpf });
-
-      const paciente = pacienteEmail && pacienteCPF && pacienteEmail.id === pacienteCPF.id;
-
-      if (paciente) {
-         return response.status(200).send({ response: "Paciente já cadastrado no sistema." });
-      }
-      
-      return response.status(200).send({ response: "Paciente não cadastrado." });
-
-   } catch (err) {
-      console.log(err)
-      return response.status(500).send({response: "Erro ao tentar verificar os dados pra realizar o cadastro", err})
+   if (!dadosPaciente) {
+      return response.status(404).send({response: "Usuário não encontrado."});
    }
+
+   const usuario = await repositorioUsuario.findOneBy({email: request.usuario.email});
+   if (!usuario) {
+      return response.status(404).send({response: "Usuário não encontrado."});
+   }
+
+   const paciente = {...dadosPaciente, createdAt: usuario.createdAt}
+
+   return response.status(200).send({response: paciente});
 });
 
 route.post("/", async (request, response) => {
    const {cpf, sus, nome, nome_social, data_nascimento, num_telefone, email, estado_civil, etnia, genero, escolaridade, 
-      nacionalidade, naturalidade_estado, naturalidade_municipio, estado_clinico, responsavel_legal, filiacao_mae, filiacao_pai, 
-      leitura, escrita, nome_instituicao, tipo_instituicao, id_endereco, id_agente, id_cbo } = request.body;
+         nacionalidade, naturalidade_estado, naturalidade_municipio, estado_clinico, responsavel_legal, filiacao_mae, filiacao_pai, 
+         leitura, escrita, nome_instituicao, tipo_instituicao, id_endereco, id_agente, id_cbo } = request.body;
    
    if(cpf.length != 11) {
       return response.status(400).send({response: "O CPF deve conter 11 dígitos."});
@@ -97,9 +71,9 @@ route.post("/", async (request, response) => {
       return response.status(400).send({response: "O nome deve conter pelo menos 1 caracetere."});
    }
 
-   // if(data_nascimento.length != 8) {
-   //    return response.status(400).json({ error: 'Data de nascimento inválida. Use o formato YYYY-MM-DD.' });
-   // }
+   if(data_nascimento.length != 8) {
+      return response.status(400).json({ error: 'Data de nascimento inválida. Use o formato YYYY-MM-DD.' });
+   }
    
    if(num_telefone.length < 10 || num_telefone.length > 11) {
       return response.status(400).send({response: "O numero deve conter pelo menos 10 caraceteres."});
@@ -156,12 +130,10 @@ route.post("/", async (request, response) => {
          return response.status(400).send({response: "Esse endereço não foi encontrado."});
       }
 
-      const agente = await repositorioAgente.findOne({
-         where: {
-            id: id_agente,
-         }
-      });
-
+      const agente = await repositorioagente.findOneBy({
+         id: id_agente,
+         deletedAt: IsNull()
+      })
       if(!agente) {
          return response.status(400).send({response: "Esse agente não foi encontrado."});
       }
@@ -178,15 +150,12 @@ route.post("/", async (request, response) => {
       const novo_paciente = repositorioPaciente.create({cpf, sus, nome, nome_social : nomeSocial, data_nascimento, num_telefone, email, estado_civil, etnia, genero, escolaridade, 
       nacionalidade, naturalidade_estado, naturalidade_municipio, estado_clinico, responsavel_legal, filiacao_mae, filiacao_pai, 
       leitura, escrita, nome_instituicao, tipo_instituicao, endereco, agente, cbo});
-
       await repositorioPaciente.save(novo_paciente);
-      
+      return response.status(201).send({response: "Paciente cadastrado com sucesso."});
    } catch (err) {
       console.log(err)
       return response.status(500).send({response: err});
    }
-
-   return response.status(201).send({response: "Paciente cadastrado com sucesso."});
 });
 
 route.put("/:id", async (request, response) => {

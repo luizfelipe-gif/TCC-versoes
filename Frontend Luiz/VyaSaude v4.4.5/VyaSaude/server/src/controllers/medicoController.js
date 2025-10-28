@@ -1,69 +1,66 @@
-import { AppDataSource }      from "../database/data-source.js";
-import { Like }               from "typeorm";
-import { authenticate }       from "../utils/jwt.js";
-import express                from "express";
-import agente                 from "../entities/agente.js";
-import usuario                from "../entities/usuario.js";
-import posto                  from "../entities/postosaude.js";
-import cbo                    from "../entities/cbo.js";
+import { AppDataSource } from "../database/data-source.js";
+import { Like, IsNull } from "typeorm";
+import express, { request, response } from "express";
+import medico from "../entities/medico.js";
+import posto from "../entities/postosaude.js";
+import cbo from "../entities/cbo.js";
+import { authenticate } from "../utils/jwt.js";
 
 const route = express.Router();
-const repositorioAgente = AppDataSource.getRepository(agente);
-const repositorioUsuario = AppDataSource.getRepository(usuario);
+const repositorioMedico = AppDataSource.getRepository(medico);
 const repositorioPosto = AppDataSource.getRepository(posto);
 const repositorioCbo = AppDataSource.getRepository(cbo);
-const repositorioPaciente = AppDataSource.getRepository(paciente);
 
 route.get("/", async (request, response) => {
-    const agentes = await repositorioAgente.findBy({data_demissao: IsNull()});
-    return response.status(200).send({response: agentes});
+    const medicos = await repositorioMedico.findBy({data_demissao: IsNull()});
+    return response.status(200).send({response: medicos});
 });
 
 route.get("/:encontrarNome", async (request, response) => {
     const {encontrarNome} = request.params;
-    const encontrarAgente = await repositorioAgente.find({where: [
-        {nome_agente: Like(`%${encontrarNome}`)},
-        {cpf: encontrarNome}
-    ]});
-    return response.status(200).send({response: encontrarAgente});
+    const encontrarMedico = await repositorioMedico.find({
+        where: [
+            {nome_medico: Like(`%${encontrarNome}`)},
+            {cpf: encontrarNome}
+        ]});
+        return response.status(200).send({response: encontrarMedico});
 });
 
 route.get("/perfil", authenticate, async (request, response) => {
-   const {usuario} = request;
+    const {usuario} = request;
 
-   if (!usuario) {
-    return response.status(403).send({response: "Sem permissão de acesso."});
-   }
-
-   try {
-    const agente = await repositorioAgente.findOne({where:
-        {cpf: usuario.cpf},
-        relations: ["posto", "cbo"]
-    });
-
-    if (!agente) {
-        return response.status(404).send({response: "Agente não encontrado."});
+    if(!usuario) {
+        return response.status(403).send({response: "Sem permissão de acesso."});
     }
 
-    const agentePayload = {
-        ...agente,
-        posto: agente.posto.nome_posto,
-        cbo_codigo: agente.cbo.codigo,
-        cbo_descricao: agente.cbo.descricao,
-        createdAt: usuario.createdAt
-    };
+    try {
+        const medico = await repositorioMedico.findOne({where:
+            {cpf: usuario.cpf},
+            relations: ["posto", "cbo"]
+        });
 
-    return response.status(200).send(agentePayload); 
-   } catch(err) {
-    console.log(err);
-   }
+        if (!medico) {
+            return response.status(404).send({response: "Médico não encontrado."});
+        }
+
+        const medicoPayload = {
+            ...medico,
+            posto: medico.posto.nome_posto,
+            cbo_codigo: medico.cbo.codigo,
+            cbo_descricao: medico.cbo.descricao,
+            createdAt: usuario.createdAt
+        };
+
+        return response.status(200).send(medicoPayload);
+    } catch(err) {
+        console.log(err);
+    }
 });
 
-// CADASTRO DE AGENTES
 route.post("/", async (request, response) => {
-    const {nome_agente, cpf, data_admissao, email, telefone, id_posto, id_cbo} = request.body;
+    const {nome_medico, cpf, data_admissao, email, telefone, id_posto, id_cbo} = request.body;
 
-    if(nome_agente.length < 1) {
+    if(nome_medico.length < 1) {
         return response.status(400).send({response: "O nome deve conter no mínimo 1 caractere."});
     }
     if(cpf.length != 11) {
@@ -94,8 +91,8 @@ route.post("/", async (request, response) => {
             return response.status(400).send({response: "O cbo não foi encontrado."});
         }
 
-        const novo_agente = repositorioAgente.create({nome_agente, cpf, data_admissao, email, telefone, posto, cbo});
-        await repositorioAgente.save(novo_agente);
+        const novo_medico = repositorioMedico.create({nome_medico, cpf, data_admissao, email, telefone, posto, cbo});
+        await repositorioMedico.save(novo_medico);
         return response.status(201).send({response: "Agente cadastrado com sucesso."});
     } catch(err) {
         return response.status(500).send({response: err});
@@ -103,11 +100,10 @@ route.post("/", async (request, response) => {
 });
 
 route.put("/:id", async (request, response) => {
-
     const {id} = request.params;
-    const {nome_agente, cpf, data_admissao, email, telefone, id_posto, id_cbo} = request.body;
+    const {nome_medico, cpf, data_admissao, email, telefone, id_posto, id_cbo} = request.body;
 
-    if(nome_agente.length < 1) {
+    if(nome_medico.length < 1) {
         return response.status(400).send({response: "O nome deve conter no mínimo 1 caractere."});
     }
     if(cpf.length != 11) {
@@ -138,14 +134,14 @@ route.put("/:id", async (request, response) => {
             return response.status(400).send({response: "O cbo não foi encontrado."});
         }
 
-        await repositorioAgente.update({id}, {nome_agente, cpf, data_admissao, email, telefone, posto, cbo});
-        return response.status(200).send({response: "Agente atualizado com sucesso."});
+        await repositorioMedico.update({id}, {nome_medico, cpf, data_admissao, email, telefone, posto, cbo});
+        return response.status(200).send({response: "Médico atualizado com sucesso."});
     } catch (err) {
         return response.status(500).send({response: err})
     }
 });
 
-route.delete("/:id", async (request, response) => {
+route.delete("/", async (request, response) => {
     const {id} = request.params;
 
     if(isNaN(id)) {
@@ -153,8 +149,8 @@ route.delete("/:id", async (request, response) => {
     }
 
     try {
-        await repositorioAgente.update({id}, {data_demissao: () => "CURRENT_TIMESTAMP"});
-        return response.status(200).send({response: "Agente deletado com sucesso."});
+        await repositorioMedico.update({id}, {data_demissao: () => "CURRENT_TIMESTAMP"});
+        return response.status(200).send({response: "Médico deletado com sucesso."});
     } catch (err) {
         return response.status(500).send({response: err});
     }
