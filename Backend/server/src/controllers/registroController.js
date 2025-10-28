@@ -1,7 +1,7 @@
 import { AppDataSource }      from "../database/data-source.js";
 import { IsNull, Like }               from "typeorm";
 import express                from "express";
-import registro               from "../entities/registro_atividade.qjs";
+import registro               from "../entities/registro_atividade.js";
 import agente                 from "../entities/agente.js";
 import paciente               from "../entities/paciente.js";
 import endereco               from "../entities/endereco.js";

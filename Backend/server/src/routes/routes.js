@@ -1,11 +1,11 @@
 // Essenciais:
 import { authenticate }          from "../utils/jwt.js";
 import express                   from "express";
-import registroController        from "./controllers/registroController.js";
+import registroController        from "../controllers/registroController.js";
 import enderecoController        from "../controllers/enderecoController.js";
 import loginController           from "../controllers/loginController.js";
 import usuarioController         from "../controllers/usuarioController.js";
-import usuarioCadastroController from "../controllers/usuarioCadastroController.js";
+import usuarioCadastroController from "../controllers/crud_usuarios/usuarioCadastroController.js";
 
 // Usuários:
 import adminController           from "../controllers/adminController.js";
@@ -32,17 +32,17 @@ const routes = express();
 routes.use("/endereco",          authenticate, enderecoController);
 routes.use("/login",             loginController);
 routes.use("/registro",          registroController);
-routes.use("/usuario",            usuarioController);
+routes.use("/usuario",           usuarioController);
 routes.use("/usuarioCadastro",   usuarioCadastroController);
 
 // Usuários:
 routes.use("/admin",             authenticate, adminController);
-routes.use("/gerente",            gerenteController);
+routes.use("/gerente",           gerenteController);
 routes.use("/medico",            authenticate, medicoController);
 routes.use("/agente",            authenticate, agenteController);
 routes.use("/recepcao",          authenticate, recepcaoController);
 routes.use("/paciente",          authenticate, pacienteController);
-routes.use("/admin/usuario",            authenticate, adminCadastroController);
+routes.use("/admin",             authenticate, adminCadastroController);
 
 // Relacionamentos:
 routes.use("/zona",              zonaController);

@@ -4,6 +4,7 @@ import posto from "../entities/postosaude.js";
 import cbo from "../entities/cbo.js";
 import { AppDataSource } from "../database/data-source.js";
 import { IsNull, Like } from "typeorm";
+import { authenticate } from "../utils/jwt.js";
 /*  ------------------------------------------------    */
 const route = express.Router();
 const repositorioAdmin = AppDataSource.getRepository(administrador);

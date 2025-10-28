@@ -4,7 +4,7 @@ import { authenticate } from "../utils/jwt.js";
 import express from "express";
 import recepcao from "../entities/agente.js";
 import usuario from "../entities/usuario.js";
-import posto from "../entities/postosaude.js/index.js";
+import posto from "../entities/postosaude.js";
 import cbo from "../entities/cbo.js";
 
 const route = express.Router();

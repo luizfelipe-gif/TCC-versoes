@@ -1,7 +1,7 @@
-import { AppDataSource }      from "../database/data-source.js";
+import { AppDataSource }      from "../../database/data-source.js";
 import { Like, IsNull }       from "typeorm";
 import express                from "express";
-import usuario                from "../entities/usuario.js";
+import usuario                from "../../entities/usuario.js";
 
 const route = express.Router();
 const repositorioUsuario = AppDataSource.getRepository(usuario);
