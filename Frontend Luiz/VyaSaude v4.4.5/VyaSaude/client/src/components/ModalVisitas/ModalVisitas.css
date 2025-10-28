@@ -1,0 +1,40 @@
+.buttonModal {
+   padding: 10px 20px;
+   font-size: 16px;
+}
+
+.modal-overlay {
+   display: flex;
+   position: fixed;
+   top: 7vh;
+   left: 300px;
+   width: calc(100% - 300px);
+   height: 93vh;
+   justify-content: center;
+   align-items: center;
+   background: rgba(0, 0, 0, 0.3);
+}
+
+.modal-content {
+   display: flex;
+   position: relative;
+   background: white;
+   padding: 50px;
+   /* margin: 25% 25%; */
+   width: 85%;
+   height: 60%;
+   border-radius: 8px;
+   text-align: center;
+   justify-content: center;
+   align-items: center;
+}
+
+.hist_visitas {
+   width-large input {
+      width: 70%;
+   }
+
+   medium-input {
+      width: 40%;
+   }
+}

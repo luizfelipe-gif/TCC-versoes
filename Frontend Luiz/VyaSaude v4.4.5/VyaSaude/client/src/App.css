@@ -107,6 +107,7 @@ main {
    margin-top: 7vh;
    height: calc(100vh - 7vh);
    left: 300px;
+   padding: 20px 2vw;
 }
 
 .directAccessDiv {

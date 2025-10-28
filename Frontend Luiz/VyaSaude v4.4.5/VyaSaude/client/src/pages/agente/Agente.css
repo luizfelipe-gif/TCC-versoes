@@ -27,8 +27,6 @@
 } */
 
 .agente-perfil {
-   padding: 20px 2vw;
-
    input {
       font-size: 1rem !important;
       height: 1.3rem !important;
@@ -80,4 +78,12 @@
 
 .table-inputs {
    display: flex;
+}
+
+
+.agente-histVisitas {
+   button {
+      align-items: end;
+      justify-content: end;
+   }
 }

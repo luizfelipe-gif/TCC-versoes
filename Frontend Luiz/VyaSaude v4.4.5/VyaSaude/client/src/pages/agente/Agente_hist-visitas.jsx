@@ -8,11 +8,14 @@ import { Button, FormLabel, TextField } from "@mui/material";
 // import TabelaVisitas from "../../components/TabelaVisitas/Index";
 import { useState, useEffect } from "react";
 import api from '../../services/api';
+import ModalVisitas from "../../components/ModalVisitas/Index";
 
 function Agente_histVisitas() {
    const navigate = useNavigate();
    
    const [usuarios, setUsuarios] = useState([]);
+
+   const [modal, setModal] = useState(false); // Abertura e fechamento do Modal
    
    // useEffect(() => {
    //    async function buscarDados() {
@@ -32,11 +35,31 @@ function Agente_histVisitas() {
    //    buscarDados();
    // }, []);
       
-   useEffect(() => {
+   const [registros, setRegistros] = useState({
+      nome: '',
+      cpf: '',
+      email: ''
+   });
+
+   // * UNIFICAR FUNÇÕES de trazerDados()
+   async function trazerDados() { // recarregar a lista quando solicitado
+      try {
+         const token = sessionStorage.getItem("token");
+         await api.get('/login/testee', {headers: {Authorization: `Bearer ${token}`}}, registros)
+         .then(res => setUsuarios(res.data) || console.log(res))
+         setRegistros(registros);
+      } catch(err) {
+         console.log(err)
+      }
+   };
+
+   useEffect(() => { // carregar a lista ao renderizar a página
       async function trazerDados() {
          try {
-            await api.get('/login/testee', registros)
+            const token = sessionStorage.getItem("token");
+            await api.get('/login/testee', {headers: {Authorization: `Bearer ${token}`}}, registros)
             .then(res => setUsuarios(res.data) || console.log(res))
+            setRegistros(registros);
          } catch(err) {
             console.log(err)
          }
@@ -44,30 +67,27 @@ function Agente_histVisitas() {
       trazerDados();
    }, [])
    
-   const [registros, setRegistros] = useState({
-      nome: '',
-      cpf: '',
-      email: ''
-   });
 
-   // async function recarregarLista() {
-   //    trazerDados();
-   // }
+   function recarregarLista() {
+      trazerDados();
+   }
 
-   // const apagarRegistro = async (cpf) => {
-   //    try {
-   //       await api.delete(`/login/${cpf}`)
-   //    } catch(err) {
-   //       throw err;
-   //    }
-   // }
+   const apagarRegistro = (cpf) => {
+      try {
+         api.delete(`/usuario/${cpf}`)
+         window.location.reload;
+         console.log("registro excluido com sucesso")
+      } catch(err) {
+         throw err;
+      }
+   }
       
   return (
       <div className="app">
          <Header/>
          <Sidenav/>
          <main className="content-pages">
-            <div className="agente-perfil d-block" style={{position: "relative"}}>
+            <div className="agente-histVisitas d-block" style={{position: "relative"}}>
                <div className="title-pages">
                   <svg onClick={() => navigate(-1)} style={{ cursor:"pointer" }} className="align-self-start"
                   viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 10L3.29289 10.7071L2.58579 10L3.29289 9.29289L4 10ZM21 18C21 18.5523 20.5523 19 20 19C19.4477 19 19 18.5523 19 18L21 18ZM8.29289 15.7071L3.29289 10.7071L4.70711 9.29289L9.70711 14.2929L8.29289 15.7071ZM3.29289 9.29289L8.29289 4.29289L9.70711 5.70711L4.70711 10.7071L3.29289 9.29289ZM4 9L14 9L14 11L4 11L4 9ZM21 16L21 18L19 18L19 16L21 16ZM14 9C17.866 9 21 12.134 21 16L19 16C19 13.2386 16.7614 11 14 11L14 9Z" fill="#000000"></path> </g></svg>
@@ -89,82 +109,94 @@ function Agente_histVisitas() {
                
                <br></br>
 
+               <button onClick={() => console.log(registros)}>Console Registros</button>
+
                <TextField className="width-large disable" variant="outlined" value={registros.nome} label="Nome completo"/>
                <TextField className="width-medium disable" variant="outlined" value={registros.cpf} label="CPF"/>
                <TextField className="width-medium disable" variant="outlined" value={registros.email} label="E-mail"/>
 
                {/* <Button variant="contained" color="primary" onClick={recarregarLista}>Recarregar lista</Button> */}
 
-               <div>
-                  <table>
-                     <thead>
-                        <tr>
-                           <th>ID Registro</th>
-                           <th>Nome do Paciente</th>
-                           <th>CPF do Paciente</th>
-                           <th>Email</th>
-                           <th>Ações</th>
-                        </tr>
-                     </thead>
-                     <tbody>
-                        {usuarios.map((dado, idRegistro) => {
-                           return (
-                              <tr key={idRegistro}>
-                                 <td>{idRegistro + 1}</td>
-                                 <td>{dado.nome}</td>
-                                 <td>{dado.cpf}</td>
-                                 <td>{dado.email}</td>
-                                 <td>
-                                    <button onClick={() => {
-                                       console.log(`Usuario: ${idRegistro} ${dado.nome} ${dado.cpf} ${dado.email}`)
-                                       }}>Ações</button>
-                                 </td>
-                              </tr>
-                           )
-                        })}
-                     </tbody>
-                  </table>
+               <table className="table table-hover">
+                  <thead>
+                     <tr>
+                        <th>ID Registro</th>
+                        <th>Nome do Paciente</th>
+                        <th>CPF do Paciente</th>
+                        <th>Email</th>
+                        <th>Ações</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {usuarios.map((dado, idRegistro) => {
+                        return (
+                           <tr key={idRegistro}>
+                              <td>{idRegistro + 1}</td>
+                              <td>{dado.nome}</td>
+                              <td>{dado.cpf}</td>
+                              <td>{dado.email}</td>
+                              <td>
+                                 {/* <button onClick={() => {
+                                    console.log(`Usuario: ${idRegistro} ${dado.nome} ${dado.cpf} ${dado.email}`)
+                                 }}>Ações</button> */}
 
-                  {/* <table>
-                     <thead>
-                        <tr>
-                           <th>ID Registro</th>
-                           <th>Nome do Paciente</th>
-                           <th>CPF do Paciente</th>
-                           <th>Nome do Agente</th>
-                           <th>Endereço</th>
-                           <th>Data/Hora</th>
-                           <th>Motivo</th>
-                           <th>Desfecho</th>
-                           <th>Descrição</th>
-                           <th>Ações</th>
-                        </tr>
-                     </thead>
-                     <tbody>
-                        {usuarios.map((dado, idRegistro) => {
-                           return (
-                              <tr key={idRegistro}>
-                                 <td>{idRegistro + 1}</td>
-                                 <td>{dado.nomePaciente}</td>
-                                 <td>{dado.cpfPaciente}</td>
-                                 <td>{dado.nomeAgente}</td>
-                                 <td>{dado.endereco}</td>
-                                 <td>{dado.data_hora}</td>
-                                 <td>{dado.motivo}</td>
-                                 <td>{dado.desfecho}</td>
-                                 <td>{dado.descricao}</td>
-                                 <td>
-                                    <button onClick={() => {
-                                       console.log(`Usuario: ${idRegistro} + ${dado.nomePaciente} + ${dado.cpfPaciente} + ${dado.nomeAgente} + ${dado.endereco} + ${dado.data_hora} + ${dado.motivo} + ${dado.desfecho} + ${dado.descricao}`)
-                                       }}>mostrar Dados</button>
-                                    <button onClick={() => apagarRegistro(registros.cpf)}>Excluir</button>
-                                 </td>
-                              </tr>
-                           )
-                        })}
-                     </tbody>
-                  </table> */}
+                                 <button onClick={() => {}}>Ações</button>
+
+                                 <button>Editar</button>
+
+                                 <button onClick={apagarRegistro(dado.cpf)}>Deletar</button>
+                              </td>
+                           </tr>
+                        )
+                     })}
+                  </tbody>
+               </table>
+
+               <div>
+                  <button onClick={() => setModal(true)}>Abrir modal</button>
+                  {modal && <ModalVisitas onClose={() => setModal(false)} />}
+                     
+                  <button onClick={() => recarregarLista()}>Recarregar Registros</button>
                </div>
+               {/* <table>
+                  <thead>
+                     <tr>
+                        <th>ID Registro</th>
+                        <th>Nome do Paciente</th>
+                        <th>CPF do Paciente</th>
+                        <th>Nome do Agente</th>
+                        <th>Endereço</th>
+                        <th>Data/Hora</th>
+                        <th>Motivo</th>
+                        <th>Desfecho</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {usuarios.map((dado, idRegistro) => {
+                        return (
+                           <tr key={idRegistro}>
+                              <td>{idRegistro + 1}</td>
+                              <td>{dado.nomePaciente}</td>
+                              <td>{dado.cpfPaciente}</td>
+                              <td>{dado.nomeAgente}</td>
+                              <td>{dado.endereco}</td>
+                              <td>{dado.data_hora}</td>
+                              <td>{dado.motivo}</td>
+                              <td>{dado.desfecho}</td>
+                              <td>{dado.descricao}</td>
+                              <td>
+                                 <button onClick={() => {
+                                    console.log(`Usuario: ${idRegistro} + ${dado.nomePaciente} + ${dado.cpfPaciente} + ${dado.nomeAgente} + ${dado.endereco} + ${dado.data_hora} + ${dado.motivo} + ${dado.desfecho} + ${dado.descricao}`)
+                                    }}>mostrar Dados</button>
+                                 <button onClick={() => apagarRegistro(registros.cpf)}>Excluir</button>
+                              </td>
+                           </tr>
+                        )
+                     })}
+                  </tbody>
+               </table> */}
             </div>
          </main>
       </div>

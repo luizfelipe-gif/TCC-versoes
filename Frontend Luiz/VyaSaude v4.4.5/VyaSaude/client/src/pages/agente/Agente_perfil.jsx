@@ -12,7 +12,7 @@ import { TextField } from "@mui/material"
 function Agente_perfil() {
    const navigate = useNavigate();
 
-   const [formDados, setFormDados] = useState({
+   const [dadosAgente, setDadosAgente] = useState({
       nome: '',
       cpf: '',
       email: '',
@@ -37,7 +37,7 @@ function Agente_perfil() {
                }
             });
 
-            setFormDados(response.data);
+            setDadosAgente(response.data);
             console.log(response);
          } catch (error) {
             console.error(error);
@@ -65,14 +65,14 @@ function Agente_perfil() {
                   </div>
 
                   <div className="form-fields-agente">
-                     <TextField className="width-large disable" variant="outlined" value={formDados.nome} label="Nome completo"/>
-                     <TextField className="width-medium disable" variant="outlined" value={formDados.cpf} label="CPF"/>
+                     <TextField className="width-large disable" variant="outlined" value={dadosAgente.nome} label="Nome completo"/>
+                     <TextField className="width-medium disable" variant="outlined" value={dadosAgente.cpf} label="CPF"/>
                   </div>
 
                   <div className="form-fields-agente">
-                     <TextField className="width-medium disable" variant="outlined" value={formDados.email} label="E-mail"/>
-                     <TextField className="width-medium" variant="outlined" value={formDados.telefone} label="Telefone" />
-                     <TextField className="width-medium" variant="outlined" value={formDados.posto} label="Posto"/>
+                     <TextField className="width-medium disable" variant="outlined" value={dadosAgente.email} label="E-mail"/>
+                     <TextField className="width-medium" variant="outlined" value={dadosAgente.telefone} label="Telefone" />
+                     <TextField className="width-medium" variant="outlined" value={dadosAgente.posto} label="Posto"/>
                   </div>
                </div>
 
@@ -84,13 +84,13 @@ function Agente_perfil() {
 
                <div className="form-fields-agente">
                   <TextField className="width-large disable" variant="outlined" value={""} label="Cadastrado por" disabled/>
-                  <TextField className="width-medium disable" variant="outlined" value={new Date(formDados.createdAt).toLocaleString('pt-BR')} label="Data e Hora de criação" />
+                  <TextField className="width-medium disable" variant="outlined" value={new Date(dadosAgente.createdAt).toLocaleString('pt-BR')} label="Data e Hora de criação" />
                </div>
 
                <div className="form-fields-agente">
-                  <TextField className="width-small disable" variant="outlined" value={formDados.data_admissao} label="Data de Admissão" />
-                  <TextField className="width-small disable" variant="outlined" value={formDados.cbo_codigo} label="Código CBO" />
-                  <TextField className="width-large disable" variant="outlined" value={formDados.cbo_descricao} label="Descrição da Atividade" />
+                  <TextField className="width-small disable" variant="outlined" value={dadosAgente.data_admissao} label="Data de Admissão" />
+                  <TextField className="width-small disable" variant="outlined" value={dadosAgente.cbo_codigo} label="Código CBO" />
+                  <TextField className="width-large disable" variant="outlined" value={dadosAgente.cbo_descricao} label="Descrição da Atividade" />
                </div>
 
                {/* Botões pra voltar e alterar cadastro*/}
