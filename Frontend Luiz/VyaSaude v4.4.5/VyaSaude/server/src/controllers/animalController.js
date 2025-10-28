@@ -9,7 +9,7 @@ const repositorioAnimal = AppDataSource.getRepository(animal);
 route.get("/", async (request, response) => {
     const animais = await repositorioAnimal.find();
     return response.status(200).send({response: animais});
-})
+});
 
 route.get("/:encontrarNome", async (request, response) => {
     const {encontrarNome} = request.params;

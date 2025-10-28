@@ -11,7 +11,7 @@ import cbo                    from "../entities/cbo.js";
 const route = express.Router();
 const repositorioPaciente = AppDataSource.getRepository(paciente);
 const repositorioUsuario = AppDataSource.getRepository(usuario);
-const repositorioagente = AppDataSource.getRepository(agente);
+const repositorioAgente = AppDataSource.getRepository(agente);
 const repositorioCbo = AppDataSource.getRepository(cbo);
 const repositorioEndereco = AppDataSource.getRepository(endereco);
 
@@ -130,7 +130,7 @@ route.post("/", async (request, response) => {
          return response.status(400).send({response: "Esse endereço não foi encontrado."});
       }
 
-      const agente = await repositorioagente.findOneBy({
+      const agente = await repositorioAgente.findOneBy({
          id: id_agente,
          deletedAt: IsNull()
       })

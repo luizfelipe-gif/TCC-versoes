@@ -3,6 +3,7 @@ import { Like }               from "typeorm";
 import { authenticate }       from "../utils/jwt.js";
 import express                from "express";
 import agente                 from "../entities/agente.js";
+import paciente               from "../entities/paciente.js";
 import usuario                from "../entities/usuario.js";
 import posto                  from "../entities/postosaude.js";
 import cbo                    from "../entities/cbo.js";

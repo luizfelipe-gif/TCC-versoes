@@ -810,11 +810,11 @@ insert into usuario (cpf, nome, senha, email, tipoUsuario) values  							/* INS
 /* INSERT GERENTE */
 
 
-insert into administrador(nome, cpf, data_admissao, email, telefone, postoId, cboCodigo) values 				/* INSERT ADMIN */
+insert into administrador(nome_admin, cpf, data_admissao, email, telefone, postoId, cboCodigo) values 				/* INSERT ADMIN */
 ("Admin", "12345678901", "2018-10-03", "admin@teste.com", "11983265784", 1, 1312);
 
 
-insert into agente(nome, cpf, data_admissao, email, telefone, postoId, cboCodigo) values 				/* INSERT AGENTE */
+insert into agente(nome_agente, cpf, data_admissao, email, telefone, postoId, cboCodigo) values 				/* INSERT AGENTE */
 ("Agente", "12345678903", "2018-10-03", "agente@teste.com", "11983265784", 1, 5151),
 ("José Augusto Bonifácio", "09432174312", "2018-10-03", "joseaugusto@gmail.com", "11983265783", 1, 5151);
 

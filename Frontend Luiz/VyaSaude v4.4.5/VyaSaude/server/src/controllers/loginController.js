@@ -22,7 +22,7 @@ route.get("/me", authenticate, async (request, response) => {
 
    return response.status(200).send({
       nome: usuario.nome,
-      nome_social: usuario.nome_social,
+      // nome_social: usuario.nome_social,
       cpf: usuario.cpf,
       email: usuario.email,
       tipoUsuario: usuario.tipoUsuario,

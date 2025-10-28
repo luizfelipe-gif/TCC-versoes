@@ -4,17 +4,19 @@ import express                   from "express";
 import registroController        from "../controllers/registroController.js";
 import enderecoController        from "../controllers/enderecoController.js";
 import loginController           from "../controllers/loginController.js";
-import usuarioController         from "../controllers/usuarioController.js";
-import usuarioCadastroController from "../controllers/crud_usuarios/usuarioCadastroController.js";
 
 // Usuários:
-import adminController           from "../controllers/adminController.js";
-import gerenteController         from "../controllers/gerenteController.js";
-import medicoController          from "../controllers/medicoController.js";
-import agenteController          from "../controllers/agenteController.js"
-import recepcaoController        from "../controllers/recepcaoController.js";
-import pacienteController        from "../controllers/pacienteController.js";
-import adminCadastroController   from "../controllers/crud_usuarios/adminCadastroController.js";
+import usuarioController          from "../controllers/usuarioController.js";
+import usuarioCadastroController  from "../controllers/crud_usuarios/usuarioCadastroController.js";
+import adminController            from "../controllers/adminController.js";
+import adminCadastroController    from "../controllers/crud_usuarios/adminCadastroController.js";
+import gerenteController          from "../controllers/gerenteController.js";
+import agenteController           from "../controllers/agenteController.js"
+// import agenteCadastroController   from "../controllers/crud_usuarios/agenteCadastroController.js";
+import recepcaoController         from "../controllers/recepcaoController.js";
+// import recepcaoCadastroController from "../controllers/crud_usuarios/recepcaoCadastroController.js";
+import medicoController           from "../controllers/medicoController.js";
+import pacienteController         from "../controllers/pacienteController.js";
 
 // Relacionamentos:
 import animalController          from "../controllers/animalController.js";
