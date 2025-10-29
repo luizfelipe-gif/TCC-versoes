@@ -1,5 +1,5 @@
 import { AppDataSource }      from "../database/data-source.js";
-import { Like }               from "typeorm";
+import { Like, IsNull }       from "typeorm";
 import { authenticate }       from "../utils/jwt.js";
 import express                from "express";
 import agente                 from "../entities/agente.js";

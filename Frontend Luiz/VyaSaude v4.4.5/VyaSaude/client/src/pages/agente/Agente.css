@@ -83,7 +83,22 @@
 
 .agente-histVisitas {
    button {
-      align-items: end;
-      justify-content: end;
+      margin: 0px 3px;
    }
+   tr, th { /* tr = cabeçalho (categorias), th = linhas */
+      text-align: center;
+   }
+   
+}
+
+.modal-overlay {
+   display: flex;
+   position: fixed;
+   top: 7vh;
+   left: 300px;
+   width: calc(100% - 300px);
+   height: 93vh;
+   justify-content: center;
+   align-items: center;
+   background: rgba(0, 0, 0, 0.3);
 }

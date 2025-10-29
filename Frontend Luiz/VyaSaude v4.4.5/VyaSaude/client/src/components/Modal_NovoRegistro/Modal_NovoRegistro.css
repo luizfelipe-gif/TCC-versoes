@@ -1,0 +1,79 @@
+.Modal_NovoRegistro-content {
+   position: relative;
+   background: white;
+   padding: 3vh 4vw;
+   /* margin: 25% 25%; */
+   width: 85%;
+   height: 85%;
+   border-radius: 8px;
+   text-align: center;
+   justify-content: center;
+   align-items: center;
+   overflow-y: auto;
+   box-shadow: 0px 0px 16px 5px rgba(0,0,0,0.3);
+
+
+   .titulo {
+      display: grid;
+      align-items: center;
+      grid-template-columns: 10fr 0.5fr;
+      /* justify-content: center; */
+      margin: 2vh 0;
+
+      span {
+         margin: 0;
+      }
+
+      .fechar {
+         color: rgba(var(--bs-success-rgb));
+         background-color: rgba(0, 0, 0, 0.1);
+         border-radius: 50%;
+         aspect-ratio: 1/1;
+
+         cursor: pointer;
+         text-align: center;
+         justify-content: center;
+         align-items: center;
+      }
+   }
+}
+
+.Modal_NovoRegistro-elements {
+   hr {
+      margin: 25px 0;
+   }
+
+   span {
+      margin-bottom: 15px;
+   }
+
+   .grid {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 10px;
+   }
+
+   .grid_1 {
+      grid-template-columns: 2fr 1fr 1fr;
+   }
+   
+   .grid_2 {
+      grid-template-columns: 2fr 1fr;
+   }
+
+   .grid_3 {
+      grid-template-columns: 2fr 2fr 1fr;
+   }
+
+   .grid_4 {
+      grid-template-columns: 1fr 1fr;
+   }
+
+}
+
+.modal_buttons {
+   display: flex;
+   justify-content: space-around;
+   margin-top: 3vh;
+   margin-bottom: 1vh;
+}

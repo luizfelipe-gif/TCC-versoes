@@ -22,16 +22,17 @@ route.get("/", async (request, response) => {
 
 route.get("/:encontrarPaciente", async (request, response) => {
    const {encontrarPaciente} = request.params;
-   const verificarPaciente = await repositorioPaciente.find({where: [
+   const verificarPaciente = await repositorioPaciente.findOne({where: [
       {nome: Like(`%${encontrarPaciente}`)},
       {cpf: encontrarPaciente}
-   ]});
+   ],
+      relations: ["endereco", "agente", "cbo"]});
 
    if (!verificarPaciente || verificarPaciente.length === 0) {
       return response.status(404).send({ message: "Paciente não encontrado" });
    }
 
-   return response.status(200).send({response: verificarPaciente});
+   return response.status(200).send(verificarPaciente);
 });
 
 route.get("/perfil", authenticate, async (request, response) => {

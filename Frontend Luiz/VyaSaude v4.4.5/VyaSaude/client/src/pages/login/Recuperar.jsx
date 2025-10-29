@@ -24,7 +24,7 @@ function Recuperar() {
    }
 
    return (
-      <content className="content-login_app-css">
+      <main className="content-login_app-css">
 
 
          <div className='content-body-login_app-css'>
@@ -72,7 +72,7 @@ function Recuperar() {
          <br />
          <span className='etecWaterMark'>Projeto desenvolvido para Etec de Embu das Artes - 2025</span>
 
-      </content>
+      </main>
    )
 }
 

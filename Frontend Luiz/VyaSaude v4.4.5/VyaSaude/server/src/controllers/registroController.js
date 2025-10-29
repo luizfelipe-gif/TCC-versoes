@@ -17,7 +17,7 @@ route.get("/", async (request, response) => {
     return response.status(200).send({response: registros});
 })
 
-route.get("encontrarVisita", async (request, response) => {
+route.get("/:encontrarVisita", async (request, response) => {
     const {encontrarVisita} = request.params;
     const encontrarRegistro = await repositorioRegistro.findBy({data_visita: Like(`%${encontrarVisita}`)});
     return response.status(200).send({response: encontrarRegistro});

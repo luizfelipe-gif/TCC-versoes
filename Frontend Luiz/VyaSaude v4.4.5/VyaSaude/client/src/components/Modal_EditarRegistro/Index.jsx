@@ -1,9 +1,9 @@
-import "./ModalVisitas.css";
+import "./Modal_EditarRegistro.css";
 import { TextField } from "@mui/material";
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 
-export default function ModalVisitas({onClose}) {
+export default function Modal_EditarRegistro({onClose}) {
    const [dadosPaciente, setDadosPaciente] = useState({
       nome: '',
       nome_social: '',
