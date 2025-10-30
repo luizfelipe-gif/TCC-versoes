@@ -20,13 +20,19 @@ route.get("/", async (request, response) => {
     return response.status(200).send({response: agentes});
 });
 
-route.get("/:encontrarNome", async (request, response) => {
-    const {encontrarNome} = request.params;
-    const encontrarAgente = await repositorioAgente.find({where: [
-        {nome_agente: Like(`%${encontrarNome}`)},
-        {cpf: encontrarNome}
-    ]});
-    return response.status(200).send({response: encontrarAgente});
+route.get("/:encontrarPaciente", async (request, response) => {
+   const {encontrarPaciente} = request.params;
+   const verificarPaciente = await repositorioAgente.findOne({where: [
+      {nome_agente: Like(`%${encontrarPaciente}`)},
+      {cpf: encontrarPaciente}
+   ], 
+      relations: ["posto", "cbo"]});
+      
+   if (!verificarPaciente || verificarPaciente.length === 0) {
+      return response.status(404).send({ message: "Paciente não encontrado" });
+   }
+   
+   return response.status(200).send(verificarPaciente);
 });
 
 route.get("/perfil", authenticate, async (request, response) => {

@@ -10,6 +10,7 @@ select * from gerente_posto;
 select * from tipo_animal;
 select * from tipo_imovel;
 select * from material_predominante;
+select * from registro_atividade;
 
 # TABELAS DE CHAVE ESTRANGEIRA INDEPENDENTES
 select * from endereco;

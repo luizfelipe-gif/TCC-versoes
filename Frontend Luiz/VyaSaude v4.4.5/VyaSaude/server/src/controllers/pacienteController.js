@@ -26,7 +26,7 @@ route.get("/:encontrarPaciente", async (request, response) => {
       {nome: Like(`%${encontrarPaciente}`)},
       {cpf: encontrarPaciente}
    ],
-      relations: ["endereco", "agente", "cbo"]});
+   relations: ["endereco", "agente", "cbo"]});
 
    if (!verificarPaciente || verificarPaciente.length === 0) {
       return response.status(404).send({ message: "Paciente não encontrado" });

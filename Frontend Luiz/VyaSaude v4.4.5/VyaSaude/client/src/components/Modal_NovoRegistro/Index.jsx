@@ -1,10 +1,13 @@
 import "./Modal_NovoRegistro.css";
 import api from '../../services/api';
-import { TextField } from "@mui/material";
+import { TextField, Select } from "@mui/material";
 import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
+import { getUser } from "../../helpers/auth";
 
 export default function Modal_NovoRegistro({onClose}) {
+   const usuarioLogado = getUser();
+
    const [novoRegistro, setNovoRegistro] = useState({
       agenteId: null,
       pacienteId: null,
@@ -15,7 +18,6 @@ export default function Modal_NovoRegistro({onClose}) {
       descricao: null,
       
       cpf: null,
-      //postoId: null,
    });
 
    const [dadosPaciente, setDadosPaciente] = useState({
@@ -39,12 +41,11 @@ export default function Modal_NovoRegistro({onClose}) {
    const [dadosAgente, setDadosAgente] = useState({
       nome_agente: null,
       cns: null,
-      ubs_codigo: null,
       ubs_nome: null,
+      ubs_codigo: null,
       ubs_email: null,
-      ubs_telefone: null,
+      ubs_telefone: null
    });
-      
 
    useEffect(() => {
       if (novoRegistro.cpf && novoRegistro.cpf.length === 11) {
@@ -54,35 +55,48 @@ export default function Modal_NovoRegistro({onClose}) {
 
    async function buscarDados() {
       try {
-         const response = await api.get(`/paciente/${novoRegistro.cpf}`)
-         console.log("response: ", response.data)
+         const buscarPaciente = await api.get(`/paciente/${novoRegistro.cpf}`)
+         console.log("Busca do Paciente: ", buscarPaciente.data)
          
          setDadosPaciente(({
-            pacienteId: response.data.id,
-            cpf: response.data.cpf,
-            nome: response.data.nome,
-            sus: response.data.sus,
-            data_nascimento: response.data.data_nascimento,
-            num_telefone: response.data.num_telefone,
-            email: response.data.email,
-
-            logradouro: response.data.endereco.logradouro, // Dados de endereço não estão vindo
-            numero: response.data.endereco.numero,
-            complemento: response.data.endereco.complemento,
-            cep: response.data.endereco.cep,
-            bairro: response.data.endereco.bairro,
-            cidade: response.data.endereco.cidade,
-            estado: response.data.endereco.estado,
-         }))
+            pacienteId: buscarPaciente.data.id,
+            cpf: buscarPaciente.data.cpf,
+            nome: buscarPaciente.data.nome,
+            sus: buscarPaciente.data.sus,
+            data_nascimento: buscarPaciente.data.data_nascimento,
+            num_telefone: buscarPaciente.data.num_telefone,
+            email: buscarPaciente.data.email,
+            
+            logradouro: buscarPaciente.data.endereco.logradouro,
+            numero: buscarPaciente.data.endereco.numero,
+            complemento: buscarPaciente.data.endereco.complemento,
+            cep: buscarPaciente.data.endereco.cep,
+            bairro: buscarPaciente.data.endereco.bairro,
+            cidade: buscarPaciente.data.endereco.cidade,
+            estado: buscarPaciente.data.endereco.estado
+         }));
          
-         console.log("dadosPaciente: ", dadosPaciente)
+         const buscarAgente = await api.get(`/agente/${usuarioLogado.cpf}`)
+         console.log("Busca do Agente: ", buscarAgente.data)
 
-
+         setDadosAgente(({
+            nome_agente: buscarAgente.data.nome_agente,
+            cns: "",// Discutir com o grupo sobre o "código do agente"
+            ubs_nome: buscarAgente.data.posto.nome_posto,
+            ubs_codigo: buscarAgente.data.posto.id,
+            ubs_email: buscarAgente.data.posto.email,
+            ubs_telefone: buscarAgente.data.posto.telefone
+         }));
+         
          setNovoRegistro((dados) => ({
             ...dados,
             pacienteId: dadosPaciente.id,
-            nome: dadosPaciente.nome
+            agenteId: dadosAgente.id,
          }));
+
+         console.log("novoRegistro: ", novoRegistro)
+         console.log("dadosPaciente: ", dadosPaciente)
+         console.log("dadosAgente: ", dadosAgente)
       } catch(err) {
          console.log(err)
       }
@@ -109,7 +123,7 @@ export default function Modal_NovoRegistro({onClose}) {
          <div className="Modal_NovoRegistro-content">
             <div className="titulo">
                <span className="h3">Novo registro de visita domiciliar</span>
-               <div className="fechar"> {/* TROCAR PRA ICONE SVG*/}
+               <div className="fechar" onClick={onClose}> {/* TROCAR PRA ICONE SVG*/}
                   X
                </div>
             </div>
@@ -130,43 +144,46 @@ export default function Modal_NovoRegistro({onClose}) {
                   <span className="d-flex h5 text-success">Endereço</span>
 
                   <div className="grid grid_2">
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Logradouro"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Número" type="number"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Complemento"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="CEP" type="number"></TextField>
+                     <TextField variant="outlined" name="logradouro" value={dadosPaciente.logradouro} onChange={(e) => handleFormChange(e)} label="Logradouro"></TextField>
+                     <TextField variant="outlined" name="numero" value={dadosPaciente.numero} onChange={(e) => handleFormChange(e)} label="Número" type="number"></TextField>
+                     <TextField variant="outlined" name="complemento" value={dadosPaciente.complemento} onChange={(e) => handleFormChange(e)} label="Complemento"></TextField>
+                     <TextField variant="outlined" name="cep" value={dadosPaciente.cep} onChange={(e) => handleFormChange(e)} label="CEP" type="number"></TextField>
                   </div>
                   
                   <div className="grid grid_3">
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Bairro"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Cidade"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="UF"></TextField>
+                     <TextField variant="outlined" name="bairro" value={dadosPaciente.bairro} onChange={(e) => handleFormChange(e)} label="Bairro"></TextField>
+                     <TextField variant="outlined" name="cidade" value={dadosPaciente.cidade} onChange={(e) => handleFormChange(e)} label="Cidade"></TextField>
+                     <TextField variant="outlined" name="estado" value={dadosPaciente.estado} onChange={(e) => handleFormChange(e)} label="UF"></TextField>
                   </div>
 
                   <hr/>
                   <span className="d-flex h5 text-success">Dados do Agente</span>
 
                   <div className="grid grid_2">
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Agente de Saúde"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="CNS" type="number"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Unidade Básica de Saúde"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Código da Unidade" type="number"></TextField>
+                     <TextField variant="outlined" name="nome_agente" value={dadosAgente.nome_agente} onChange={(e) => handleFormChange(e)} label="Agente de Saúde"></TextField>
+                     <TextField variant="outlined" name="cns" value={dadosAgente.cns} onChange={(e) => handleFormChange(e)} label="CNS" type="number"></TextField>
+                     <TextField variant="outlined" name="ubs_nome" value={dadosAgente.ubs_nome} onChange={(e) => handleFormChange(e)} label="Unidade Básica de Saúde"></TextField>
+                     <TextField variant="outlined" name="ubs_codigo" value={dadosAgente.ubs_codigo} onChange={(e) => handleFormChange(e)} label="Código da Unidade" type="number"></TextField>
                   </div>
 
                   <div className="grid grid_4">
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Email da UBS" type="email"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Telefone da UBS" type="number"></TextField>
+                     <TextField variant="outlined" name="ubs_email" value={dadosAgente.ubs_email} onChange={(e) => handleFormChange(e)} label="Email da UBS" type="email"></TextField>
+                     <TextField variant="outlined" name="ubs_telefone" value={dadosAgente.ubs_telefone} onChange={(e) => handleFormChange(e)} label="Telefone da UBS" type="number"></TextField>
                   </div>
 
                   <hr/>
                   <span className="d-flex h5 text-success">Sobre a visita</span>
 
                   <div className="grid grid_4">
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Motivo"></TextField>
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Desfecho"></TextField>
+                     <TextField variant="outlined" name="motivo" value={novoRegistro.motivo} onChange={(e) => handleFormChange(e)} label="Motivo"></TextField>
+                     <TextField variant="outlined" name="desfecho" value={novoRegistro.desfecho} onChange={(e) => handleFormChange(e)} label="Desfecho"></TextField>
+                  {/* <Select
+                  
+                  /> */}
                   </div>
 
                   <div className="grid">
-                     <TextField variant="outlined" value={null} onChange={(e) => handleFormChange(e)} label="Descrição"></TextField>
+                     <TextField variant="outlined" name="descricao" value={novoRegistro.descricao} onChange={(e) => handleFormChange(e)} label="Descrição"></TextField>
                   </div>
 
                   <div className="modal_buttons">
