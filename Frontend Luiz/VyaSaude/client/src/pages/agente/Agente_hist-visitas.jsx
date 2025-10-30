@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from '../../services/api';
 
-import Header from "../../components/Header/"
-import Sidenav from "../../components/Sidenav/Sidenav_agente/"
+import Header from "../../components/Header"
+import Sidenav from "../../components/Sidenav/Sidenav_agente"
 // import ButtonBack from "../../components/ButtonBack/Index"
 // import PageWIP from "../../components/PageWIP/Index"
 
