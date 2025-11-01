@@ -4,6 +4,7 @@ import { TextField, Select } from "@mui/material";
 import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { getUser } from "../../helpers/auth";
+import SVG_Close from '../../../public/close.svg'
 
 export default function Modal_NovoRegistro({onClose}) {
    const usuarioLogado = getUser();
@@ -111,7 +112,7 @@ export default function Modal_NovoRegistro({onClose}) {
       }));
    };
 
-   async function handleRegister(e) {
+   async function handleRegister(e) { // fazer a unção pra realizar o registro
       e.preventDefault();
 
 
@@ -124,7 +125,7 @@ export default function Modal_NovoRegistro({onClose}) {
             <div className="titulo">
                <span className="h3">Novo registro de visita domiciliar</span>
                <div className="fechar" onClick={onClose}> {/* TROCAR PRA ICONE SVG*/}
-                  X
+                  <img src={SVG_Close} width={20} height={20} ></img>
                </div>
             </div>
 

@@ -16,7 +16,7 @@ const repositorioCbo = AppDataSource.getRepository(cbo);
 const repositorioEndereco = AppDataSource.getRepository(endereco);
 
 route.get("/", async (request, response) => {
-    const pacientes = await repositorioPaciente.find();
+    const pacientes = await repositorioPaciente.findBy({inatividade: IsNull()});
     return response.status(200).send({response: pacientes});
 });
 
@@ -32,7 +32,7 @@ route.get("/:encontrarPaciente", async (request, response) => {
       return response.status(404).send({ message: "Paciente não encontrado" });
    }
 
-   return response.status(200).send(verificarPaciente);
+   return response.status(200).send({response: verificarPaciente});
 });
 
 route.get("/perfil", authenticate, async (request, response) => {
