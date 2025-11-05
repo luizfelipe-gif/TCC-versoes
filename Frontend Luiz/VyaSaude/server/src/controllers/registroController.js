@@ -29,20 +29,16 @@ route.post("/cadastro", async (request, response) => {
     const motivos = ["Cadastramento/Atualização", "Visita Periódica"];
     const desfechos = ["Visita realizada", "Visita recusada", "Ausente"];
 
-    if(data_visita != 8) {
-        return response.status(400).send({response: "" });
-    }
-
     if(registro_visita.length < 10) {
-        return response.status(400).send({response: "O registro da visita deve possuir no mínimo 10 caracteres."});
+      return response.status(400).send({response: "O registro da visita deve possuir no mínimo 10 caracteres."});
     }
 
-    if(!motivos.includes(motivo.toLowerCase())) {
-        return response.status(400).send({response: "O motivo deve corresponder a uma das opções."});
+    if(!motivos.includes(motivo)) {
+      return response.status(400).send({response: "O motivo deve corresponder a uma das opções."});
     }
 
-    if(!desfechos.includes(desfecho.toLowerCase())) {
-        return response.status(400).send({response: "O desfecho deve corresponder a uma das opções."});
+    if(!desfechos.includes(desfecho)) {
+      return response.status(400).send({response: "O desfecho deve corresponder a uma das opções."});
     }
     
     try {

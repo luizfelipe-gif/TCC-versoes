@@ -3,32 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from '../../services/api';
 
-import Header from "../../components/Header"
+import Header from "../../components/Header/Index"
 import Sidenav from "../../components/Sidenav/Sidenav_agente"
 // import ButtonBack from "../../components/ButtonBack/Index"
 // import PageWIP from "../../components/PageWIP/Index"
 
-import { Button, FormLabel, TextField } from "@mui/material";
-import { Modal } from 'react-bootstrap'
+// import { Button, FormLabel, TextField } from "@mui/material";
+// import { Modal } from 'react-bootstrap'
 import Modal_NovoRegistro from "../../components/Modal_NovoRegistro/Index";
 import Modal_EditarRegistro from "../../components/Modal_EditarRegistro/Index";
 import Modal_DetalhesRegistro from "../../components/Modal_DetalhesRegistro/Index";
 
 function Agente_histVisitas() {
-   const [show, setShow] = useState(false);
-
-   const handleClose = () => setShow(false);
-   const handleShow = () => setShow(true);
-
-
-
-
    const navigate = useNavigate();
    const [usuarios, setUsuarios] = useState([]);
 
-   const [exibirModal_novoRegistro, setNovoRegistro] = useState(false); // Abertura e fechamento do Modal
-   const [exibirModal_editarRegistro, setEditarRegistro] = useState(false); // Abertura e fechamento do Modal
-   const [exibirModal_detalhesRegistro, setDetalhesRegistro] = useState(false); // Abertura e fechamento do Modal
+   const [exibirModal_novoRegistro, setNovoRegistro] = useState(false); // Abertura e fechamento do Modal de Novo Registro
+   const [exibirModal_editarRegistro, setEditarRegistro] = useState(false); // Abertura e fechamento do Modal de Novo Registro
+   const [exibirModal_detalhesRegistro, setDetalhesRegistro] = useState(false); // Abertura e fechamento do Modal de Novo Registro
    
    // useEffect(() => {
    //    async function buscarDados() {
