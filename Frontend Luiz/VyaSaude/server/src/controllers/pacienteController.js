@@ -32,7 +32,7 @@ route.get("/:encontrarPaciente", async (request, response) => {
       return response.status(404).send({ message: "Paciente não encontrado" });
    }
 
-   return response.status(200).send({response: verificarPaciente});
+   return response.status(200).send(verificarPaciente);
 });
 
 route.get("/perfil", authenticate, async (request, response) => {

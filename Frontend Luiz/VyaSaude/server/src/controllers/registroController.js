@@ -13,8 +13,8 @@ const repositorioPaciente = AppDataSource.getRepository(paciente);
 const repositorioEndereco = AppDataSource.getRepository(endereco);
 
 route.get("/", async (request, response) => {
-    const registros = await repositorioRegistro.find();
-    return response.status(200).send({response: registros});
+    const registros = await repositorioRegistro.find({relations: ["endereco", "agente", "paciente"]});
+    return response.status(200).send(registros);
 })
 
 route.get("/:encontrarVisita", async (request, response) => {
@@ -24,7 +24,7 @@ route.get("/:encontrarVisita", async (request, response) => {
 });
 
 route.post("/cadastro", async (request, response) => {
-    const {data_visita, registro_visita, motivo, desfecho, descricao, id_agente, id_paciente, id_endereco} = request.body;
+    const {data_visita, registro_visita, motivo, desfecho, descricao, agenteId, pacienteId, enderecoId} = request.body;
     
     const motivos = ["Cadastramento/Atualização", "Visita Periódica"];
     const desfechos = ["Visita realizada", "Visita recusada", "Ausente"];
@@ -43,7 +43,7 @@ route.post("/cadastro", async (request, response) => {
     
     try {
         const agente = await repositorioAgente.findOneBy({
-            id: id_agente,
+            id: agenteId,
             data_demissao: IsNull()
         });
         if(!agente) {
@@ -51,14 +51,14 @@ route.post("/cadastro", async (request, response) => {
         }
 
         const paciente = await repositorioPaciente.findOneBy({
-            id: id_paciente
+            id: pacienteId
         });
         if(!paciente) {
             return response.status(400).send({response: "Esse paciente não foi encontrado."});
         }
 
         const endereco = await repositorioEndereco.findOneBy({
-            id: id_endereco
+            id: enderecoId
         });
         if(!endereco) {
             return response.status(400).send({response: "Esse endereço não foi encontrado."});
@@ -77,7 +77,7 @@ route.post("/cadastro", async (request, response) => {
 
 route.put("/atualizacao/:id", async (request, response) => {
     const {id} = request.params;
-    const {registro_visita, motivo, desfecho, descricao, id_agente, id_paciente} = request.body;
+    const {registro_visita, motivo, desfecho, descricao, agenteId, pacienteId} = request.body;
     
     const motivos = ["Cadastramento/Atualização", "Visita Periódica"];
     const desfechos = ["Visita realizada", "Visita recusada", "Ausente"];
@@ -100,7 +100,7 @@ route.put("/atualizacao/:id", async (request, response) => {
 
     try {
         const agente = await repositorioAgente.findOneBy({
-            id: id_agente,
+            id: agenteId,
             data_demissao: IsNull()
         });
         if(!agente) {
@@ -108,7 +108,7 @@ route.put("/atualizacao/:id", async (request, response) => {
         }
 
         const paciente = await repositorioPaciente.findOneBy({
-            id: id_paciente
+            id: pacienteId
         });
         if(!paciente) {
             return response.status(400).send({response: "Esse paciente não foi encontrado no sistema."});
