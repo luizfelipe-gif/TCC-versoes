@@ -6,10 +6,8 @@ import { Button } from 'react-bootstrap';
 import { getUser } from "../../helpers/auth";
 import SVG_Close from '../../../public/close.svg'
 
-export default function Modal_NovoRegistro({onClose}) {
+export default function Modal_NovoRegistro({onClose, onSuccess}) {
    const usuarioLogado = getUser();
-
-   const [DataHora, setDataHora] = useState('');
 
    const [cpfErro, setCpfErro] = useState(false);
    const [cpfValidacao, setCpfValidacao] = useState('');
@@ -62,33 +60,33 @@ export default function Modal_NovoRegistro({onClose}) {
 
    async function buscarDados() { // Obtenção dos dados do Paciente e do Agente logado.
       try {
-         const buscarPaciente = await api.get(`/paciente/${novoRegistro.cpf}`)
-         console.log("Busca do Paciente: ")
-         console.log(buscarPaciente)
+         const buscarPaciente = await api.get(`/paciente/${novoRegistro.cpf}`);
+         console.log("Busca do Paciente: ");
+         console.log(buscarPaciente.data);
 
-         if (buscarPaciente.data?.response) {
+         if (buscarPaciente.data) {
             setDadosPaciente(({
-               pacienteId: buscarPaciente.data.response.id,
-               cpf: buscarPaciente.data.response.cpf,
-               nome: buscarPaciente.data.response.nome,
-               sus: buscarPaciente.data.response.sus,
-               data_nascimento: buscarPaciente.data.response.data_nascimento,
-               num_telefone: buscarPaciente.data.response.num_telefone,
-               email: buscarPaciente.data.response.email,
+               pacienteId: buscarPaciente.data.id,
+               cpf: buscarPaciente.data.cpf,
+               nome: buscarPaciente.data.nome,
+               sus: buscarPaciente.data.sus,
+               data_nascimento: buscarPaciente.data.data_nascimento,
+               num_telefone: buscarPaciente.data.num_telefone,
+               email: buscarPaciente.data.email,
                
-               enderecoId: buscarPaciente.data.response.endereco.id,
-               logradouro: buscarPaciente.data.response.endereco.logradouro,
-               numero: buscarPaciente.data.response.endereco.numero,
-               complemento: buscarPaciente.data.response.endereco.complemento,
-               cep: buscarPaciente.data.response.endereco.cep,
-               bairro: buscarPaciente.data.response.endereco.bairro,
-               cidade: buscarPaciente.data.response.endereco.cidade,
-               estado: buscarPaciente.data.response.endereco.estado
+               enderecoId: buscarPaciente.data.endereco.id,
+               logradouro: buscarPaciente.data.endereco.logradouro,
+               numero: buscarPaciente.data.endereco.numero,
+               complemento: buscarPaciente.data.endereco.complemento,
+               cep: buscarPaciente.data.endereco.cep,
+               bairro: buscarPaciente.data.endereco.bairro,
+               cidade: buscarPaciente.data.endereco.cidade,
+               estado: buscarPaciente.data.endereco.estado
             }));
             
-            const buscarAgente = await api.get(`/agente/${usuarioLogado.cpf}`)
-            console.log("Busca do Agente: ")
-            console.log(buscarAgente)
+            const buscarAgente = await api.get(`/agente/${usuarioLogado.cpf}`);
+            console.log("Busca do Agente: ");
+            console.log(buscarAgente.data);
 
             setDadosAgente(({
                agenteId: buscarAgente.data.id,
@@ -99,26 +97,31 @@ export default function Modal_NovoRegistro({onClose}) {
                ubs_email: buscarAgente.data.posto.email,
                ubs_telefone: buscarAgente.data.posto.telefone
             }));
-            
-            setNovoRegistro((dados) => ({
-               ...dados,
-               pacienteId: dadosPaciente.pacienteId,
-               enderecoId: dadosPaciente.enderecoId,
-               agenteId: dadosAgente.agenteId
-            }));
 
             setCpfErro(false);
-               setCpfValidacao('');
-            } else {
-            setCpfErro(true);
             setCpfValidacao('');
+         } else {
+            setCpfErro(true);
          }
       } catch(err) {
-         console.log(err)
+         console.log(err);
          setCpfErro(true);
          setCpfValidacao("CPF não encontrado ou inválido.");
       }
    };
+
+
+   useEffect(() => { // Garante que o formulário tenha os IDs de paciente e agente vinculados antes de fazer o registro do formulário.
+      if (dadosPaciente.pacienteId && dadosAgente.agenteId) {
+         setNovoRegistro((dados) => ({
+            ...dados,
+            pacienteId: dadosPaciente.pacienteId,
+            enderecoId: dadosPaciente.enderecoId,
+            agenteId: dadosAgente.agenteId
+         }));
+      }
+   }, [dadosPaciente, dadosAgente]);
+
 
    const handleFormChange = (e) => { // Captura alterações nos inputs, e insere os valores no array de novoRegistro.
       const {name, value} = e.target;
@@ -129,15 +132,6 @@ export default function Modal_NovoRegistro({onClose}) {
       }));
    };
 
-   async function obterDataHora() { // Obter data e hora atual.
-      const dataAtual = new Date();
-      const dia = dataAtual.getFullYear().toString() + (dataAtual.getMonth() + 1).toString().padStart(2, '0') + dataAtual.getDate().toString().padStart(2, '0');
-      const hora = dataAtual.getHours().toString().padStart(2, '0') + dataAtual.getMinutes().toString().padStart(2, '0');
-      const dataFormatada = dia + hora;
-      
-      setDataHora(dataFormatada);
-      console.log(`${dataFormatada}`)
-   }
 
    async function handleRegister(e) { // Cadastro da Visita.
       e.preventDefault();
@@ -145,11 +139,11 @@ export default function Modal_NovoRegistro({onClose}) {
       // Etapa de realização do cadastro da Visita.
       try {
          const registroPayload = {...novoRegistro, registro_visita: 1234567890, data_visita: '2025-07-30 00:00:00'};
-         console.log(registroPayload)
+         console.log(registroPayload);
          await api.post('/registro/cadastro', registroPayload);
-
+         onSuccess(); // salva o registro, fecha o modal, e atualiza a lista na tela de visitas.
       } catch(err) {
-         console.log(err.response)
+         console.log(err.response);
       }
    }
 
@@ -167,7 +161,6 @@ export default function Modal_NovoRegistro({onClose}) {
                <form id="modal_novoRegistro" onSubmit={handleRegister}>
                   <span className="d-flex h5 text-success">Dados do Paciente</span>
                   <div className="grid grid_1">
-                     {/* <button onClick={() => console.log(obterDataHora())}>HoraData</button> */}
                      <TextField variant="outlined" name="nome" value={dadosPaciente.nome} onChange={(e) => handleFormChange(e)} label="Nome do Paciente"></TextField>
                      <TextField variant="outlined" name="cpf" required error={cpfErro} helperText={cpfValidacao} value={novoRegistro.cpf} onChange={(e) => handleFormChange(e)} type="text" label="CPF do Paciente"></TextField>
                      <TextField variant="outlined" name="sus" value={dadosPaciente.sus} onChange={(e) => handleFormChange(e)} label="Nº SUS" type="number"></TextField>
