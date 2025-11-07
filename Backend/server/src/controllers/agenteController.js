@@ -1,32 +1,36 @@
-import { AppDataSource } from "../database/data-source.js";
-import { Like } from "typeorm";
-import { authenticate } from "../utils/jwt.js";
-import express from "express";
-import agente from "../entities/agente.js";
-import usuario from "../entities/usuario.js";
-import paciente from "../entities/paciente.js";
-import posto from "../entities/postosaude.js";
-import cbo from "../entities/cbo.js";
+import { AppDataSource }      from "../database/data-source.js";
+import { Like, IsNull }       from "typeorm";
+import { authenticate }       from "../utils/jwt.js";
+import express                from "express";
+import agente                 from "../entities/agente.js";
+import usuario                from "../entities/usuario.js";
+import posto                  from "../entities/postosaude.js";
+import cbo                    from "../entities/cbo.js";
 
 const route = express.Router();
 const repositorioAgente = AppDataSource.getRepository(agente);
 const repositorioUsuario = AppDataSource.getRepository(usuario);
 const repositorioPosto = AppDataSource.getRepository(posto);
 const repositorioCbo = AppDataSource.getRepository(cbo);
-const repositorioPaciente = AppDataSource.getRepository(paciente);
 
 route.get("/", async (request, response) => {
     const agentes = await repositorioAgente.findBy({data_demissao: IsNull()});
     return response.status(200).send({response: agentes});
 });
 
-route.get("/:encontrarNome", async (request, response) => {
-    const {encontrarNome} = request.params;
-    const encontrarAgente = await repositorioAgente.find({where: [
-        {nome_agente: Like(`%${encontrarNome}`)},
-        {cpf: encontrarNome}
-    ]});
-    return response.status(200).send({response: encontrarAgente});
+route.get("/:encontrarAgente", async (request, response) => {
+   const {encontrarAgente} = request.params;
+   const verificarAgente = await repositorioAgente.findOne({where: [
+      {nome_agente: Like(`%${encontrarAgente}`)},
+      {cpf: encontrarAgente}
+   ], 
+      relations: ["posto", "cbo"]});
+      
+   if (!verificarAgente || verificarAgente.length === 0) {
+      return response.status(404).send({ message: "Agente não encontrado" });
+   }
+   
+   return response.status(200).send(verificarAgente);
 });
 
 route.get("/perfil", authenticate, async (request, response) => {

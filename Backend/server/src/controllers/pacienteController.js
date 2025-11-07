@@ -1,38 +1,39 @@
 import { AppDataSource }      from "../database/data-source.js";
 import { IsNull, Like }       from "typeorm";
-import express                from "express";
-import paciente from "../entities/paciente.js";
-import usuario from "../entities/usuario.js";
-import agente from "../entities/agente.js";
-import cbo from "../entities/cbo.js";
-import endereco from '../entities/endereco.js';
-import { authenticate } from "../utils/jwt.js";
+import { authenticate }       from "../utils/jwt.js";
 
+import express                from "express";
+import paciente               from "../entities/paciente.js";
+import agente                 from "../entities/agente.js";
+import usuario                from "../entities/usuario.js";
+import endereco               from '../entities/endereco.js';
+import cbo                    from "../entities/cbo.js";
 
 const route = express.Router();
 const repositorioPaciente = AppDataSource.getRepository(paciente);
 const repositorioUsuario = AppDataSource.getRepository(usuario);
-const repositorioagente = AppDataSource.getRepository(agente);
+const repositorioAgente = AppDataSource.getRepository(agente);
 const repositorioCbo = AppDataSource.getRepository(cbo);
 const repositorioEndereco = AppDataSource.getRepository(endereco);
 
 route.get("/", async (request, response) => {
-    const pacientes = await repositorioPaciente.find();
+    const pacientes = await repositorioPaciente.findBy({inatividade: IsNull()});
     return response.status(200).send({response: pacientes});
 });
 
 route.get("/:encontrarPaciente", async (request, response) => {
    const {encontrarPaciente} = request.params;
-   const verificarPaciente = await repositorioPaciente.find({where: [
+   const verificarPaciente = await repositorioPaciente.findOne({where: [
       {nome: Like(`%${encontrarPaciente}`)},
       {cpf: encontrarPaciente}
-   ]});
+   ],
+   relations: ["endereco", "agente", "cbo"]});
 
    if (!verificarPaciente || verificarPaciente.length === 0) {
       return response.status(404).send({ message: "Paciente não encontrado" });
    }
 
-   return response.status(200).send({response: verificarPaciente});
+   return response.status(200).send(verificarPaciente);
 });
 
 route.get("/perfil", authenticate, async (request, response) => {
@@ -73,7 +74,7 @@ route.post("/", async (request, response) => {
    }
 
    if(data_nascimento.length != 8) {
-      return response.status(400).json({ error: 'Data de nascimento inválida. Use o formato YYYY-MM-DD.' });
+      return response.status(400).send({response: 'Data de nascimento inválida. Use o formato YYYY-MM-DD.' });
    }
    
    if(num_telefone.length < 10 || num_telefone.length > 11) {
@@ -131,7 +132,7 @@ route.post("/", async (request, response) => {
          return response.status(400).send({response: "Esse endereço não foi encontrado."});
       }
 
-      const agente = await repositorioagente.findOneBy({
+      const agente = await repositorioAgente.findOneBy({
          id: id_agente,
          deletedAt: IsNull()
       })

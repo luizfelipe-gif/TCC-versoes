@@ -6,10 +6,10 @@ const registro_atividade = new EntitySchema({
     columns: {
         id: {primary: true, type: "int", generated: true},
         data_visita: {type: "datetime", nullable: false},
-        registro_visita: {type: "text", nullable: false},
         motivo: {type: "enum", enum: ["Cadastramento/Atualização", "Visita Periódica"], nullable: false},
         desfecho: {type: "enum", enum: ["Visita realizada", "Visita recusada", "Ausente"], nullable: false},
-        descricao: {type: "text", nullable: true}
+        descricao: {type: "text", nullable: true},
+        registro_excluido: {type: "datetime", nullable: true}
     },
     relations: {
         agente: {type: "many-to-one", target: "Agente", nullable: false},

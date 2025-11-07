@@ -20,15 +20,16 @@ function authenticate(request, response, next) {
       return response.status(401).send({message: "Token não possui 'Bearer'"});
    }
 
-   jwt.verify(token, secret, (err, usuario) => {
+   jwt.verify(token, secret, (err, payload) => {
       if (err) {
          if (err.name === "TokenExpiredError") {
             return response.status(401).send({message: "Sessão expirada. Realize login novamente."});
          }
          return response.status(401).send({message: "Acesso não autorizado. Token inválido"});
       }
-      console.log("Token decodificado:", usuario);
-      request.usuario = usuario;
+
+      request.usuario = payload;
+      
       next();
    });
 }

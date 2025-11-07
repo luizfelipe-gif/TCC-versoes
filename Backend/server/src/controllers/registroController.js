@@ -13,41 +13,37 @@ const repositorioPaciente = AppDataSource.getRepository(paciente);
 const repositorioEndereco = AppDataSource.getRepository(endereco);
 
 route.get("/", async (request, response) => {
-    const registros = await repositorioRegistro.find();
-    return response.status(200).send({response: registros});
+    const registros = await repositorioRegistro.find({relations: ["endereco", "agente", "paciente"]});
+    return response.status(200).send(registros);
 })
 
-route.get("encontrarVisita", async (request, response) => {
+route.get("/:encontrarVisita", async (request, response) => {
     const {encontrarVisita} = request.params;
     const encontrarRegistro = await repositorioRegistro.findBy({data_visita: Like(`%${encontrarVisita}`)});
     return response.status(200).send({response: encontrarRegistro});
 });
 
 route.post("/cadastro", async (request, response) => {
-    const {data_visita, registro_visita, motivo, desfecho, descricao, id_agente, id_paciente, id_endereco} = request.body;
+    const {data_visita, registro_visita, motivo, desfecho, descricao, agenteId, pacienteId, enderecoId} = request.body;
     
     const motivos = ["Cadastramento/Atualização", "Visita Periódica"];
     const desfechos = ["Visita realizada", "Visita recusada", "Ausente"];
 
-    if(data_visita != 8) {
-        return response.status(400).send({response: "" });
-    }
-
     if(registro_visita.length < 10) {
-        return response.status(400).send({response: "O registro da visita deve possuir no mínimo 10 caracteres."});
+      return response.status(400).send({response: "O registro da visita deve possuir no mínimo 10 caracteres."});
     }
 
-    if(!motivos.includes(motivo.toLowerCase())) {
-        return response.status(400).send({response: "O motivo deve corresponder a uma das opções."});
+    if(!motivos.includes(motivo)) {
+      return response.status(400).send({response: "O motivo deve corresponder a uma das opções."});
     }
 
-    if(!desfechos.includes(desfecho.toLowerCase())) {
-        return response.status(400).send({response: "O desfecho deve corresponder a uma das opções."});
+    if(!desfechos.includes(desfecho)) {
+      return response.status(400).send({response: "O desfecho deve corresponder a uma das opções."});
     }
     
     try {
         const agente = await repositorioAgente.findOneBy({
-            id: id_agente,
+            id: agenteId,
             data_demissao: IsNull()
         });
         if(!agente) {
@@ -55,14 +51,14 @@ route.post("/cadastro", async (request, response) => {
         }
 
         const paciente = await repositorioPaciente.findOneBy({
-            id: id_paciente
+            id: pacienteId
         });
         if(!paciente) {
             return response.status(400).send({response: "Esse paciente não foi encontrado."});
         }
 
         const endereco = await repositorioEndereco.findOneBy({
-            id: id_endereco
+            id: enderecoId
         });
         if(!endereco) {
             return response.status(400).send({response: "Esse endereço não foi encontrado."});
@@ -81,17 +77,13 @@ route.post("/cadastro", async (request, response) => {
 
 route.put("/atualizacao/:id", async (request, response) => {
     const {id} = request.params;
-    const {registro_visita, motivo, desfecho, descricao, id_agente, id_paciente} = request.body;
+    const {registro_visita, motivo, desfecho, descricao, agenteId, pacienteId} = request.body;
     
     const motivos = ["Cadastramento/Atualização", "Visita Periódica"];
     const desfechos = ["Visita realizada", "Visita recusada", "Ausente"];
 
     if(isNaN(id)) {
         return response.status(400).send({response: "O id deve ser númerico."});
-    }
-
-    if(registro_visita.length < 10) {
-        return response.status(400).send({response: "O registro da visita deve possuir no mínimo 10 caracteres."});
     }
 
     if(!motivos.includes(motivo.toLowerCase())) {
@@ -104,7 +96,7 @@ route.put("/atualizacao/:id", async (request, response) => {
 
     try {
         const agente = await repositorioAgente.findOneBy({
-            id: id_agente,
+            id: agenteId,
             data_demissao: IsNull()
         });
         if(!agente) {
@@ -112,7 +104,7 @@ route.put("/atualizacao/:id", async (request, response) => {
         }
 
         const paciente = await repositorioPaciente.findOneBy({
-            id: id_paciente
+            id: pacienteId
         });
         if(!paciente) {
             return response.status(400).send({response: "Esse paciente não foi encontrado no sistema."});

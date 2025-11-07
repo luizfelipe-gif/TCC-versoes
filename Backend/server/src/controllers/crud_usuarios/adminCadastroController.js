@@ -174,7 +174,7 @@ route.post("/cadastroPaciente", async (request, response) => {
    }
 
    if(data_nascimento.length != 8) {
-      return response.status(400).json({ error: 'Data de nascimento inválida. Use o formato YYYY-MM-DD.' });
+      return response.status(400).send({response: 'Data de nascimento inválida. Use o formato YYYY-MM-DD.' });
    }
    
    if(num_telefone.length < 10 || num_telefone.length > 11) {
@@ -260,19 +260,15 @@ route.post("/cadastroPaciente", async (request, response) => {
    }
 });
 /* ------------------------------------------------------- */
-
+// CADASTRO DE UM REGISTRO
 route.post("/cadastroRegistro", async (request, response) => {
-    const {data_visita, registro_visita, motivo, desfecho, descricao, id_agente, id_paciente, id_endereco} = request.body;
+    const {data_visita, motivo, desfecho, descricao, id_agente, id_paciente, id_endereco} = request.body;
     
     const motivos = ["Cadastramento/Atualização", "Visita Periódica"];
     const desfechos = ["Visita realizada", "Visita recusada", "Ausente"];
 
     if(data_visita != 8) {
         return response.status(400).send({response: "A data deve ser válida." });
-    }
-
-    if(registro_visita.length < 10) {
-        return response.status(400).send({response: "O registro da visita deve possuir no mínimo 10 caracteres."});
     }
 
     if(!motivos.includes(motivo.toLowerCase())) {
@@ -316,9 +312,10 @@ route.post("/cadastroRegistro", async (request, response) => {
         return response.status(500).send({response: err});
     }
 });
+
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // ATUALIZAÇÃO DE AGENTES
-route.put("/:id", async (request, response) => {
+route.put("/atualizarAgente/:id", async (request, response) => {
 
     const {id} = request.params;
     const {nome_agente, cpf, data_admissao, email, telefone, id_posto, id_cbo} = request.body;
@@ -355,6 +352,93 @@ route.put("/:id", async (request, response) => {
         }
 
         await repositorioAgente.update({id}, {nome_agente, cpf, data_admissao, email, telefone, posto, cbo});
+        return response.status(200).send({response: "Agente atualizado com sucesso."});
+    } catch (err) {
+        return response.status(500).send({response: err})
+    }
+});
+
+// ATUALIZAÇÃO DE MÉDICO
+route.put("/atualizarMedico/:id", async (request, response) => {
+    const {id} = request.params;
+    const {nome_medico, cpf, data_admissao, email, telefone, id_posto, id_cbo} = request.body;
+
+    if(nome_medico.length < 1) {
+        return response.status(400).send({response: "O nome deve conter no mínimo 1 caractere."});
+    }
+    if(cpf.length != 11) {
+        return response.status(400).send({response: "O cpf deve conter 11 caracteres."});
+    }
+    if(data_admissao.length != 8) {
+        return response.status(400).send({response: "A data deve estar no formato de data"});
+    }
+    if(!email.includes("@")) {
+        return response.status(400).send({response: "O email deve conter '@'"});
+    }
+    if(telefone.length < 10 && telefone.length > 11) {
+        return response.status(400).send({response: "O telefone deve conter até 11 caracteres."});
+    }
+
+    try {
+        const posto = await repositorioPosto.findOneBy({
+            id: id_posto
+        });
+        if(!posto) {
+            return response.status(400).send({response: "Esse posto não foi encontrado."});
+        }
+
+        const cbo = await repositorioCbo.findOneBy({
+            codigo: id_cbo
+        });
+        if(!cbo) {
+            return response.status(400).send({response: "O cbo não foi encontrado."});
+        }
+
+        await repositorioMedico.update({id}, {nome_medico, cpf, data_admissao, email, telefone, posto, cbo});
+        return response.status(200).send({response: "Médico atualizado com sucesso."});
+    } catch (err) {
+        return response.status(500).send({response: err})
+    }
+});
+
+// ATUALIZAÇÃO DE RECEPÇÃO
+route.put("/atualizarRecepcao/:id", async (request, response) => {
+
+    const {id} = request.params;
+    const {nome_recepcionista, cpf, data_admissao, email, telefone, id_posto, id_cbo} = request.body;
+
+    if(nome_recepcionista.length < 1) {
+        return response.status(400).send({response: "O nome deve conter no mínimo 1 caractere."});
+    }
+    if(cpf.length != 11) {
+        return response.status(400).send({response: "O cpf deve conter 11 caracteres."});
+    }
+    if(data_admissao.length != 8) {
+        return response.status(400).send({response: "A data deve estar no formato de data"});
+    }
+    if(!email.includes("@")) {
+        return response.status(400).send({response: "O email deve conter '@'"});
+    }
+    if(telefone.length < 10 && telefone.length > 11) {
+        return response.status(400).send({response: "O telefone deve conter até 11 caracteres."});
+    }
+
+    try {
+        const posto = await repositorioPosto.findOneBy({
+            id: id_posto
+        });
+        if(!posto) {
+            return response.status(400).send({response: "Esse posto não foi encontrado."});
+        }
+
+        const cbo = await repositorioCbo.findOneBy({
+            codigo: id_cbo
+        });
+        if(!cbo) {
+            return response.status(400).send({response: "O cbo não foi encontrado."});
+        }
+
+        await repositorioRecepcao.update({id}, {nome_recepcionista, cpf, data_admissao, email, telefone, posto, cbo});
         return response.status(200).send({response: "Agente atualizado com sucesso."});
     } catch (err) {
         return response.status(500).send({response: err})
@@ -474,5 +558,63 @@ route.put("/atualizarPaciente/:id", async (request, response) => {
 
     return response.status(201).send({response: "Paciente cadastrado com sucesso."});
 });
+/* ----------------------------------------------------------- */
+// ATUALIZAÇÃO DE UM REGISTRO
+route.put("/atualizacaoRegistro/:id", async (request, response) => {
+    const {id} = request.params;
+    const {registro_visita, motivo, desfecho, descricao, agenteId, pacienteId} = request.body;
+    
+    const motivos = ["Cadastramento/Atualização", "Visita Periódica"];
+    const desfechos = ["Visita realizada", "Visita recusada", "Ausente"];
+
+    if(isNaN(id)) {
+        return response.status(400).send({response: "O id deve ser númerico."});
+    }
+
+    if(!motivos.includes(motivo.toLowerCase())) {
+        return response.status(400).send({response: "O motivo deve corresponder a uma das opções."});
+    }
+
+    if(!desfechos.includes(desfecho.toLowerCase())) {
+        return response.status(400).send({response: "O desfecho deve corresponder a uma das opções."});
+    }
+
+    try {
+        const agente = await repositorioAgente.findOneBy({
+            id: agenteId,
+            data_demissao: IsNull()
+        });
+        if(!agente) {
+            return response.status(400).send({response: "Esse agente não foi encontrado no sistema."});
+        }
+
+        const paciente = await repositorioPaciente.findOneBy({
+            id: pacienteId
+        });
+        if(!paciente) {
+            return response.status(400).send({response: "Esse paciente não foi encontrado no sistema."});
+        }
+        
+        const texto_descricao = descricao != null ? descricao : null;
+
+        await repositorioRegistro.update({id}, {data_visita, registro_visita, motivo, desfecho, descricao : texto_descricao, agente, paciente});
+        return response.status(200).send({response: "Visita atualizada com sucesso."});
+    } catch(err) {
+        console.log(err);
+        return response.status(500).send({response: err});
+    }
+});
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------
+// EXCLUSÃO DE AGENTES
+
+
+// EXCLUSÃO DE MÉDICOS
+
+
+// EXCLUSÃO DA RECEPÇÃO
+
+
+// EXCLUSÃO DE PACIENTES
 
 export default route;
