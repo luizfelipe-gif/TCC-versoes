@@ -1,6 +1,6 @@
 import "./Modal_NovoRegistro.css";
 import api from '../../services/api';
-import { TextField, Select } from "@mui/material";
+import { TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { getUser } from "../../helpers/auth";
@@ -164,7 +164,7 @@ export default function Modal_NovoRegistro({onClose, onSuccess}) {
                      <TextField variant="outlined" name="nome" value={dadosPaciente.nome} onChange={(e) => handleFormChange(e)} label="Nome do Paciente"></TextField>
                      <TextField variant="outlined" name="cpf" required error={cpfErro} helperText={cpfValidacao} value={novoRegistro.cpf} onChange={(e) => handleFormChange(e)} type="text" label="CPF do Paciente"></TextField>
                      <TextField variant="outlined" name="sus" value={dadosPaciente.sus} onChange={(e) => handleFormChange(e)} label="Nº SUS" type="number"></TextField>
-                     <TextField variant="outlined" name="data_nascimento" value={dadosPaciente.data_nascimento} onChange={(e) => handleFormChange(e)} label="Data de Nascimento" type="date"></TextField>
+                     <TextField variant="outlined" name="data_nascimento" value={dadosPaciente.data_nascimento} InputLabelProps={{ shrink: true }} onChange={(e) => handleFormChange(e)} label="Data de Nascimento" type="date"></TextField> {/* InputLabelProps: Remove placeholder quando a data for vazia. */}
                      <TextField variant="outlined" name="num_telefone" value={dadosPaciente.num_telefone} onChange={(e) => handleFormChange(e)} label="Telefone" type="number"></TextField>
                      <TextField variant="outlined" name="email" value={dadosPaciente.email} onChange={(e) => handleFormChange(e)} label="Email" type="email"></TextField>
                   </div>
@@ -204,11 +204,22 @@ export default function Modal_NovoRegistro({onClose, onSuccess}) {
                   <span className="d-flex h5 text-success">Sobre a visita</span>
 
                   <div className="grid grid_4">
-                     <TextField variant="outlined" name="motivo" required value={novoRegistro.motivo} onChange={(e) => handleFormChange(e)} label="Motivo"></TextField>
-                     <TextField variant="outlined" name="desfecho" required value={novoRegistro.desfecho} onChange={(e) => handleFormChange(e)} label="Desfecho"></TextField>
-                  {/* <Select
-                  
-                  /> */}
+                     <FormControl variant="outlined" required>
+                        <InputLabel id="selectMotivo">Motivo</InputLabel>
+                        <Select className="select-Modal_NovoRegistro" variant="outlined" name="motivo" value={novoRegistro.motivo} onChange={(e) => handleFormChange(e)} labelId="selectMotivo" >
+                           <MenuItem value="Cadastramento/Atualização">Cadastramento/Atualização</MenuItem>
+                           <MenuItem value="Visita Periódica">Visita Periódica</MenuItem>
+                        </Select>
+                     </FormControl>
+
+                     <FormControl variant="outlined" required>
+                        <InputLabel id="selectDesfecho">Desfecho</InputLabel>
+                        <Select className="select-Modal_NovoRegistro" variant="outlined" name="desfecho" value={novoRegistro.desfecho} onChange={(e) => handleFormChange(e)} labelId="selectDesfecho" >
+                           <MenuItem value="Visita realizada">Visita realizada</MenuItem>
+                           <MenuItem value="Visita recusada">Visita recusada</MenuItem>
+                           <MenuItem value="Ausente">Ausente</MenuItem>
+                        </Select>
+                     </FormControl>
                   </div>
 
                   <div className="grid">

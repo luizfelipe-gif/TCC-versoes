@@ -68,6 +68,13 @@
       grid-template-columns: 1fr 1fr;
    }
 
+   .select-Modal_NovoRegistro { /* Estilização especifica pro Select do Modal de Novo Registro de visita domiciliar*/
+      div {
+         box-shadow: 2px 2px 10px 1px #c7c7c7a6;
+         border: solid #cfcfcf 1px;
+         text-align: start;
+      }
+   }
 }
 
 .modal_buttons {
