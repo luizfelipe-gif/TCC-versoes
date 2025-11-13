@@ -5,11 +5,7 @@ import api from '../../services/api';
 
 import Header from "../../components/Header/Index"
 import Sidenav from "../../components/Sidenav/Sidenav_agente"
-// import ButtonBack from "../../components/ButtonBack/Index"
-// import PageWIP from "../../components/PageWIP/Index"
 
-// import { Button, FormLabel, TextField } from "@mui/material";
-// import { Modal } from 'react-bootstrap'
 import Modal_NovoRegistro from "../../components/Modal_NovoRegistro/Index";
 import Modal_EditarRegistro from "../../components/Modal_EditarRegistro/Index";
 import Modal_DetalhesRegistro from "../../components/Modal_DetalhesRegistro/Index";
@@ -21,73 +17,24 @@ function Agente_histVisitas() {
    const [exibirModal_editarRegistro, setEditarRegistro] = useState(false); // Abertura e fechamento do Modal de Novo Registro
    const [exibirModal_detalhesRegistro, setDetalhesRegistro] = useState(false); // Abertura e fechamento do Modal de Novo Registro
 
+   const [recarregar, setRecarregar] = useState(false);
+   
    const [registros, setRegistros] = useState([]);
-
-   const [registro, setRegistro] = useState({
-      id: '',
-      registro_visita: '',
-      data_visita: '',
-      motivo: '',
-      desfecho: '',
-      descricao: null,
-      agenteId: '',
-      pacienteId: '',
-      enderecoId: '',
-   });
    
-   async function buscarRegistros() { // recarregar a lista quando solicitado
+   useEffect(() => {
+      async function buscarRegistros() {
+         try {
+            const resposta = await api.get('/registro');
+            const respostaArray = resposta.data;
+            setRegistros(respostaArray)
+            console.log("Registros: ", resposta.data);
+         } catch(err) {
+            console.log(err);
+         }
+      };
 
-      try {
-         const listaRegistros = await api.get('/registro');
-         setRegistros(listaRegistros.data)
-
-         console.log("registros useState: ", registros);
-      } catch(err) {
-         console.log(err);
-      }
-   };
-   
-   async function recarregarLista() {
       buscarRegistros();
-   }
-
-   useEffect(() =>  { // carregar a lista ao renderizar a página
-      try {
-         buscarRegistros();
-      } catch(err) {
-         console.log(err);
-      }
-   }, [])
-
-
-
-
-
-
-
-
-
-
-
-   const novoRegistro = (id) => {
-      try {
-         api.post(`/registro/${id}`)
-         // console.log("Registro adicionado com sucesso")
-         recarregarLista();
-      } catch(err) {
-         throw err;
-      }
-   }
-
-   const apagarRegistro = (id) => {
-      try {
-         api.delete(`/registro/${id}`)
-         // console.log("Registro excluido com sucesso")
-         recarregarLista();
-      } catch(err) {
-         throw err;
-      }
-   }
+   }, [recarregar]);
       
   return (
       <div className="app">
@@ -105,7 +52,7 @@ function Agente_histVisitas() {
                   <span className="h4 text-success">Registros realizados</span>
                   <div className="d-flex justify-content-between">
                      <button onClick={() => setNovoRegistro(true)}>Novo registro</button>
-                     <button onClick={() => buscarRegistros()}>Recarregar Registros</button>
+                     <button onClick={() => setRecarregar(!recarregar)}>Recarregar Registros</button>
                   </div>
                </div>
                
@@ -122,29 +69,26 @@ function Agente_histVisitas() {
                         <th>Motivo</th>
                         <th>Desfecho</th>
                         <th>Detalhes</th>
-                        <th>Ações</th>
+                        <th>Editar</th>
                      </tr>
                   </thead>
 
                   <tbody> 
-                     {registros.map((registro) => {
-                        return (
-                           <tr key={registro.id}>
-                              <td>{registro.registro_visita}</td>
-                              <td>{registro.nomePaciente}</td>
-                              <td>{registro.cpfPaciente}</td>
-                              <td>{new Date(registro.data_visita).toLocaleString('pt-BR')}</td>
-                              <td>{registro.nomeAgente}</td>
-                              <td>{registro.motivo}</td>
-                              <td>{registro.desfecho}</td>
-                              <td><button onClick={() => setDetalhesRegistro(true)}>Detalhes</button></td>
-                              <td>
-                                 <button onClick={() => setEditarRegistro(true)}>Editar</button>
-                                 <button onClick={() => apagarRegistro(registro)}>Deletar</button>
-                              </td>
-                           </tr>
-                        )
-                     })}
+                     {registros.map(registro => 
+                        <tr key={registro.id}>
+                           <td>{registro.registro_visita}</td>
+                           <td>{registro.paciente.nome}</td>
+                           <td>{registro.paciente.cpf}</td>
+                           <td>{new Date(registro.data_visita).toLocaleString('pt-BR')}</td>
+                           <td>{registro.agente.nome_agente}</td>
+                           <td>{registro.motivo}</td>
+                           <td>{registro.desfecho}</td>
+                           <td><button onClick={() => setDetalhesRegistro(true)}>Detalhes</button></td>
+                           <td>
+                              <button onClick={() => setEditarRegistro(true)}>Editar</button>
+                           </td>
+                        </tr>
+                     )}
                   </tbody>
                </table>
 
