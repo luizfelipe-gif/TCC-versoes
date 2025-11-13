@@ -1,6 +1,7 @@
 import "./Agente.css"
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Button } from 'react-bootstrap';
 import api from '../../services/api';
 
 import Header from "../../components/Header/Index"
@@ -48,11 +49,17 @@ function Agente_histVisitas() {
                   <h1 className="align-self-center h2 px-5">Consulta de Visitas Domiciliares</h1>
                </div>
                
-               <div className="d-flex justify-content-between">
-                  <span className="h4 text-success">Registros realizados</span>
+               <div className="subtitle">
+                  <h4 className="h4 text-success">Registros realizados</h4>
                   <div className="d-flex justify-content-between">
-                     <button onClick={() => setNovoRegistro(true)}>Novo registro</button>
-                     <button onClick={() => setRecarregar(!recarregar)}>Recarregar Registros</button>
+                     <Button variant="outline-success" className="icons" onClick={() => setNovoRegistro(true)}>
+                        <img src={'client/public/new.svg'}/>
+                        <span> Novo registro</span>
+                     </Button>
+                     <Button variant="outline-success" className="icons" onClick={() => setRecarregar(!recarregar)}>
+                        <img src={'client/public/refresh.svg'}/>
+                        <span> Recarregar Registros</span>
+                     </Button>
                   </div>
                </div>
                
@@ -83,9 +90,15 @@ function Agente_histVisitas() {
                            <td>{registro.agente.nome_agente}</td>
                            <td>{registro.motivo}</td>
                            <td>{registro.desfecho}</td>
-                           <td><button onClick={() => setDetalhesRegistro(true)}>Detalhes</button></td>
                            <td>
-                              <button onClick={() => setEditarRegistro(true)}>Editar</button>
+                              <div className="table-icons" onClick={() => setDetalhesRegistro(true)}>
+                                 <img src={'client/public/zoom.svg'}/>
+                              </div>
+                              </td>
+                           <td>
+                              <div className="table-icons" onClick={() => setEditarRegistro(true)}>
+                                 <img src={'client/public/edit.svg'}/>
+                              </div>
                            </td>
                         </tr>
                      )}
@@ -94,7 +107,7 @@ function Agente_histVisitas() {
 
                <div>
                   {/* Modal: Novo registro */}
-                  {exibirModal_novoRegistro && <Modal_NovoRegistro onClose={() => setNovoRegistro(false)} onSuccess={() => {recarregarLista(); setNovoRegistro(false)}} />}
+                  {exibirModal_novoRegistro && <Modal_NovoRegistro onClose={() => setNovoRegistro(false)} onSuccess={() => {setRecarregar(!recarregar); setNovoRegistro(false)}} />}
 
                   {/* Modal: Editar */}
                   {exibirModal_editarRegistro && <Modal_EditarRegistro onClose={() => setEditarRegistro(false)} />} 

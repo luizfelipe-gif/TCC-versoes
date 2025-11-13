@@ -39,6 +39,10 @@ button {
    box-shadow: 1px 1px 15px 1px rgba(199, 199, 199, 0.85);
 }
 
+h1, h2, h3, h4, h5 {
+   margin: 0 !important;
+}
+
 /* Estilização especificas */ 
 main {
    /* background: #F2F3F4; */

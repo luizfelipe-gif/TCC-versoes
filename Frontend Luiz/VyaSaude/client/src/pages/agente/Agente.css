@@ -82,13 +82,53 @@
 
 
 .agente-histVisitas {
+   .subtitle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+   }
+
    button {
       margin: 0px 3px;
    }
-   tr, th { /* tr = cabeçalho (categorias), th = linhas */
+   tr, th { /* tr = cabeçalho (categorias), th = linhas (categorias) */
       text-align: center;
    }
-   
+
+   table {
+      tbody {
+         tr {
+            height: 50px;
+
+            td {  
+               padding-top: 0.8%; /* alternativa pra centralizar o texto nas linhas da tabela, pois display:flex com align:center não é viavel aqui*/
+            }
+         }
+      }
+   }
+
+   .icons {
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+      height: 2.2rem;
+      gap: 7px;
+
+      img {
+         width: 1.3rem;
+      }
+   }
+
+   .table-icons {
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      
+      img {
+         width: 1.8rem;
+      }
+   }
 }
 
 .modal-overlay {
